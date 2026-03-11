@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Menu, X, Sofa, ShoppingCart } from "lucide-react"
 import { useCart } from "@/context/CartContext"
+import Image from "next/image"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -23,14 +24,21 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-            <Sofa className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
+          {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary"> */}
+            {/* <Sofa className="h-5 w-5 text-primary-foreground" /> */}
+            <Image
+              src="/images/Logo New.png"
+              alt="Mafroosh Logo"
+              width={160}
+              height={40}
+              className="object-contain"
+            />
+          {/* </div> */}
+          {/* <div>
             <span className="font-serif text-xl font-bold tracking-tight text-primary">
               Mafroosh
             </span>
-          </div>
+          </div> */}
         </Link>
 
         {/* Desktop nav */}
