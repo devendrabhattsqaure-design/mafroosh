@@ -154,22 +154,22 @@ export default function InteractiveFurnitureShowcase() {
                     1: {
                       name: "Luxe Velvet Sofa",
                       price: 45999,
-                      image: "/images/product-sofa.jpg",
+                      image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
                     },
                     2: {
                       name: "Modern Coffee Table",
                       price: 12999,
-                      image: "/images/product-table.jpg",
+                      image: "https://img-us.aosomcdn.com/thumbnail/100/n0/product/2024/09/27/mqMc83192326e2257.jpg",
                     },
                     3: {
                       name: "Ornate Wall Mirror",
                       price: 8999,
-                      image: "/images/product-mirror.jpg",
+                      image: "https://images.unsplash.com/photo-1618220179428-22790b461013",
                     },
                     4: {
                       name: "Comfort Dining Chair Set",
                       price: 24999,
-                      image: "/images/product-chairs.jpg",
+                      image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
                     },
                   }[hotspot.productId as keyof typeof product]
 
