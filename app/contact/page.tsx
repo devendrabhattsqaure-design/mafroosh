@@ -14,17 +14,17 @@ const contactInfo = [
   {
     icon: MapPin,
     title: "Store Address",
-    lines: ["Vikas Khand -5 , Gomti Nagar", "Varanasi, Uttar Pradesh", "India - 221001"],
+    lines: ["529C/011-CC, Ring Road, Vikas Nagar", "Lucknow, Uttar Pradesh", "India - 226022"],
   },
   {
     icon: Phone,
     title: "Phone",
-   lines: ["+91 8840403939", "+91 9125233285"],
+   lines: ["+91 9621374263", "+91 9621374263"],
   },
   {
     icon: Mail,
     title: "Email",
-    lines: ["info@sacredsamagri.com", "orders@sacredsamagri.com"],
+    lines: ["info@mafroosh.com", "orders@mafroosh.com"],
   },
   {
     icon: Clock,
@@ -88,7 +88,7 @@ export default function ContactPage() {
               <AnimatedSection delay={200}>
                 <div className="overflow-hidden rounded-xl border border-border shadow-sm">
                   <iframe
-                    title="Sacred Samagri Store Location"
+                    title="Mafroosh Store Location"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3606.8045949078963!2d83.00835547513647!3d25.31106477706781!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398e2e2b1a6b0a5b%3A0x68a0a5c9e2f0c62e!2sKashi%20Vishwanath%20Temple!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                     width="100%"
                     height="300"

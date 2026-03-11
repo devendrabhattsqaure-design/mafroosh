@@ -84,21 +84,21 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <span className="text-sm text-secondary-foreground/80">
-                  Vikas Khand -5 , Gomti Nagar,
+                  529C/011-CC, Ring Road, Vikas Nagar,
                   <br />
-                  Lucknow, India - 226010
+                  Lucknow, India - 226022
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-4 w-4 shrink-0 text-primary" />
                 <span className="text-sm text-secondary-foreground/80">
-                  +91 8840403939
+                  +91 9621374263
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
                 <span className="text-sm text-secondary-foreground/80">
-                  info@sacredsamagri.com
+                  info@mafroosh.com
                 </span>
               </li>
             </ul>
