@@ -21,7 +21,7 @@ export async function generateMetadata({
   const product = products.find((p) => p.id === id)
   if (!product) return { title: "Product Not Found" }
   return {
-    title: `${product.name} - Sacred Samagri`,
+    title: `${product.name} - mafroosh`,
     description: product.description,
   }
 }
@@ -31,7 +31,7 @@ const features = [
   "Handcrafted by traditional artisans",
   "Quality checked before shipping",
   "Eco-friendly packaging",
-  "Suitable for daily pooja and festivals",
+  
 ]
 
 const reviews = [

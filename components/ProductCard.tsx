@@ -149,13 +149,13 @@ const handleQuickAdd = (e: React.MouseEvent) => {
           }}
         >
           {/* Top lotus accent bar */}
-          <div className="absolute left-0 right-0 top-0 z-20 flex h-1 items-center" aria-hidden="true">
+          {/* <div className="absolute left-0 right-0 top-0 z-20 flex h-1 items-center" aria-hidden="true">
             <div className="h-full flex-1 bg-[var(--color-deep-maroon)] transition-colors duration-500 group-hover:bg-[var(--color-saffron)]" />
             <div className="relative -mt-1">
               <LotusIcon className="h-5 w-5 text-[var(--color-deep-maroon)] transition-all duration-500 group-hover:text-[var(--color-saffron)] group-hover:scale-125" />
             </div>
             <div className="h-full flex-1 bg-[var(--color-deep-maroon)] transition-colors duration-500 group-hover:bg-[var(--color-saffron)]" />
-          </div>
+          </div> */}
 
           {/* Image area with rounded inner mask */}
           <div className="relative m-3 mt-4 aspect-square overflow-hidden rounded-xl">
@@ -174,8 +174,8 @@ const handleQuickAdd = (e: React.MouseEvent) => {
             />
 
             {/* Category badge with lotus */}
-            <div className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-[var(--color-dark-brown)]/80 px-3 py-1 backdrop-blur-sm">
-              <LotusIcon className="h-3 w-3 text-[var(--color-saffron)]" />
+            <div className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-[var(--color-dark-brown)]/30 px-3 py-1 backdrop-blur-sm">
+              {/* <LotusIcon className="h-3 w-3 text-[var(--color-saffron)]" /> */}
               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-sandal)]">
                 {categoryLabels[product.category] || product.category}
               </span>
