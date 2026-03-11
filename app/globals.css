@@ -1,0 +1,252 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #FAF8F6;
+  --foreground: #2B1B1B;
+  --card: #FFFBF9;
+  --card-foreground: #2B1B1B;
+  --popover: #FFFBF9;
+  --popover-foreground: #2B1B1B;
+  --primary: #8B3A3A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #6B2C2C;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F5EEEA;
+  --muted-foreground: #6B5555;
+  --accent: #A85C5C;
+  --accent-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E8D9D3;
+  --input: #E8D9D3;
+  --ring: #8B3A3A;
+  --radius: 0.75rem;
+
+  --color-burgundy: #8B3A3A;
+  --color-deep-burgundy: #6B2C2C;
+  --color-cream: #FAF8F6;
+  --color-warm-white: #FFFBF9;
+  --color-dark-brown: #2B1B1B;
+  --color-gold: #C9A961;
+}
+
+@theme inline {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-burgundy: var(--color-burgundy);
+  --color-deep-burgundy: var(--color-deep-burgundy);
+  --color-cream: var(--color-cream);
+  --color-warm-white: var(--color-warm-white);
+  --color-dark-brown: var(--color-dark-brown);
+  --color-gold: var(--color-gold);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll animation utility */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation: fadeInUp 0.7s ease-out 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fadeInUp 0.7s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fadeInUp 0.7s ease-out 0.45s forwards;
+  opacity: 0;
+}
+
+/* Floating diya animation */
+@keyframes floatDiya {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-12px) rotate(2deg); }
+  75% { transform: translateY(-6px) rotate(-2deg); }
+}
+
+.animate-float-diya {
+  animation: floatDiya 4s ease-in-out infinite;
+}
+
+.animate-float-diya-slow {
+  animation: floatDiya 6s ease-in-out infinite;
+}
+
+/* Subtle glow on hover */
+.hover-glow:hover {
+  box-shadow: 0 8px 32px rgba(139, 58, 58, 0.15);
+}
+
+/* Product card - decor themed shadow & border */
+.product-card-lotus {
+  box-shadow:
+    0 1px 4px rgba(43, 27, 27, 0.04),
+    0 0 0 1px rgba(232, 217, 211, 0.6);
+  border: 1px solid transparent;
+}
+
+.product-card-lotus:hover {
+  border-color: rgba(139, 58, 58, 0.25);
+  box-shadow:
+    0 24px 48px -12px rgba(43, 27, 27, 0.14),
+    0 12px 24px -8px rgba(139, 58, 58, 0.1),
+    0 0 0 1px rgba(139, 58, 58, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Lotus bloom keyframe for subtle pulsing accent */
+@keyframes lotusBloom {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.animate-lotus-bloom {
+  animation: lotusBloom 3s ease-in-out infinite;
+}
+
+/* Kalawa timeline custom transitions */
+.transition-all-600 {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 600ms;
+}
+
+.transition-all-1200 {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 1200ms;
+}
+
+/* Elegant flowing animation for hero section */
+@keyframes elegantFlow {
+  0% { 
+    opacity: 0.2;
+    transform: translateY(0) rotate(0deg);
+  }
+  50% { 
+    opacity: 0.35;
+    transform: translateY(-20px) rotate(180deg);
+  }
+  100% { 
+    opacity: 0.2;
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+.animate-elegant-flow {
+  animation: elegantFlow 12s ease-in-out infinite;
+}
+
+/* Floating animations for hero lights */
+@keyframes floatSlow {
+  0%, 100% { 
+    transform: translate(0, 0);
+  }
+  25% { 
+    transform: translate(30px, -30px);
+  }
+  50% { 
+    transform: translate(0, -60px);
+  }
+  75% { 
+    transform: translate(-30px, -30px);
+  }
+}
+
+@keyframes floatSlower {
+  0%, 100% { 
+    transform: translate(0, 0);
+  }
+  25% { 
+    transform: translate(-40px, 30px);
+  }
+  50% { 
+    transform: translate(0, 60px);
+  }
+  75% { 
+    transform: translate(40px, 30px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 15s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: floatSlower 20s ease-in-out infinite;
+}
+
+/* Radial gradient for light effects */
+@supports (background: radial-gradient(circle, red, blue)) {
+  .bg-gradient-radial {
+    background: radial-gradient(var(--tw-gradient-stops));
+  }
+}
