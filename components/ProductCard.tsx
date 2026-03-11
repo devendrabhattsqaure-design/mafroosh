@@ -202,9 +202,9 @@ const handleQuickAdd = (e: React.MouseEvent) => {
         </Link>
 
         {/* Lotus divider between image and content */}
-        <div className="-mt-2 px-3">
+        {/* <div className="-mt-2 px-3">
           <LotusDivider />
-        </div>
+        </div> */}
 
         {/* Content area */}
         <div className="relative flex flex-1 flex-col px-5 pb-5 -mt-1">

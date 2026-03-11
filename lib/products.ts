@@ -34,7 +34,7 @@ export const products: Product[] = [
     description:
       "Set of 4 upholstered dining chairs with burgundy fabric and wooden legs. Comfort meets style for your dining area.",
     price: 24999,
-    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+    image: "https://media.landmarkshops.in/cdn-cgi/image/h=750,w=750,q=85,fit=cover/homecentre/1000014310415-1000014310414_02-2100.jpg",
     category: "chairs",
   },
   {

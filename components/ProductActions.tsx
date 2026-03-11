@@ -36,7 +36,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
         Add to Cart
       </button>
       <a
-        href={`https://wa.me/918840403939?text=Hi, I am interested in ${product.name} (₹${product.price})`}
+        href={`https://wa.me/919621374263?text=Hi, I am interested in ${product.name} (₹${product.price})`}
         rel="noopener noreferrer"
         className="flex items-center justify-center gap-2 rounded-xl border-2 border-[#25D366] px-8 py-3.5 font-semibold text-[#25D366] transition-all hover:bg-[#25D366]/10"
       >

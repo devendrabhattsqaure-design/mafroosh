@@ -169,7 +169,7 @@ export default function InteractiveFurnitureShowcase() {
                     4: {
                       name: "Comfort Dining Chair Set",
                       price: 24999,
-                      image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+                      image: "https://media.landmarkshops.in/cdn-cgi/image/h=750,w=750,q=85,fit=cover/homecentre/1000014310415-1000014310414_02-2100.jpg",
                     },
                   }[hotspot.productId as keyof typeof product]
 

@@ -7,10 +7,10 @@ import { products } from "@/lib/products"
 
 const categories = [
   { value: "all", label: "All" },
-  { value: "incense", label: "Incense" },
-  { value: "idols", label: "Idols" },
-  { value: "diyas", label: "Diyas" },
-  { value: "pooja-kits", label: "Pooja Kits" },
+  { value: "sofas", label: "Sofas" },
+  { value: "tables", label: "Tables" },
+  { value: "decor", label: "Decor" },
+  { value: "lighting", label: "Lighting" },
 ]
 
 export default function ProductsGrid() {
@@ -42,7 +42,7 @@ export default function ProductsGrid() {
         </AnimatedSection>
 
         {/* Grid */}
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {filtered.map((product, i) => (
             <AnimatedSection key={product.id} delay={i * 80}>
               <ProductCard product={product} />
