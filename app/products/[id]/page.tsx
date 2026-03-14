@@ -1,8 +1,10 @@
-import type { Metadata } from "next"
+"use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
-import { Check, ArrowLeft, Star, Truck, Shield, Package, Sparkles } from "lucide-react"
+import { notFound, useParams } from "next/navigation"
+import { Check, ArrowLeft, Star, Truck, Shield, Package, Sparkles, ChevronRight, Share2, Heart, ShieldCheck } from "lucide-react"
 import ProductCard from "@/components/ProductCard"
 import AnimatedSection from "@/components/AnimatedSection"
 import ProductActions from "@/components/ProductActions"
@@ -18,7 +20,7 @@ interface ProductImage {
 }
 
 interface Product {
-  product_id: number | string  // API might return number
+  product_id: number | string
   product_name: string
   description: string
   short_description: string
@@ -42,114 +44,6 @@ interface Product {
   rating?: number
 }
 
-interface Category {
-  category_id: number
-  category_name: string
-  slug: string
-}
-
-// Fetch function with org_id header
-async function fetchWithOrg(endpoint: string) {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      'x-org-id': '1',
-      'Content-Type': 'application/json',
-    },
-    next: { revalidate: 3600 } // Revalidate every hour
-  })
-  
-  if (!response.ok) {
-    throw new Error(`API call failed: ${response.statusText}`)
-  }
-  return response.json()
-}
-
-// Fetch product by ID
-async function getProduct(id: string): Promise<Product | null> {
-  try {
-    const response = await fetchWithOrg(`/products/${id}`)
-    return response.data || null
-  } catch (error) {
-    console.error('Error fetching product:', error)
-    return null
-  }
-}
-
-// Fetch related products
-async function getRelatedProducts(categoryId: number, currentProductId: string): Promise<Product[]> {
-  try {
-    const response = await fetchWithOrg(`/products?category_id=${categoryId}&limit=4`)
-    // Filter out current product and limit to 3
-    return (response.data || [])
-      .filter((p: Product) => String(p.product_id) !== currentProductId)
-      .slice(0, 3)
-  } catch (error) {
-    console.error('Error fetching related products:', error)
-    return []
-  }
-}
-
-// Generate static params for build time
-export async function generateStaticParams() {
-  try {
-    const response = await fetchWithOrg('/products?limit=100')
-    const products = response.data || []
-    
-    // Convert product_id to string for each param
-    return products.map((product: Product) => ({ 
-      id: String(product.product_id) // Ensure ID is string
-    }))
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    return [] // Return empty array to skip static generation
-  }
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}): Promise<Metadata> {
-  const { id } = await params
-  const product = await getProduct(id)
-  
-  if (!product) {
-    return {
-      title: "Product Not Found - mafroosh",
-      description: "The requested product could not be found.",
-    }
-  }
-  
-  return {
-    title: `${product.product_name} - mafroosh`,
-    description: product.short_description || product.description,
-    openGraph: {
-      title: product.product_name,
-      description: product.short_description || product.description,
-      images: product.images?.[0]?.image_url ? [{ url: product.images[0].image_url }] : [],
-    },
-  }
-}
-
-const features = [
-  {
-    icon: Check,
-    text: "100% authentic and natural materials",
-  },
-  {
-    icon: Sparkles,
-    text: "Handcrafted by traditional artisans",
-  },
-  {
-    icon: Shield,
-    text: "Quality checked before shipping",
-  },
-  {
-    icon: Package,
-    text: "Eco-friendly packaging",
-  },
-]
-
 const reviews = [
   {
     name: "Anita Verma",
@@ -164,13 +58,13 @@ const reviews = [
   {
     name: "Lakshmi Iyer",
     text: "Packaging was excellent and delivery was fast. The product exceeded my expectations in quality.",
-    rating: 4,
+    rating: 5,
   },
 ]
 
 // Transform product for ProductCard
 const transformProductForCard = (product: Product) => ({
-  id: String(product.product_id), // Ensure ID is string
+  id: String(product.product_id),
   name: product.product_name,
   description: product.short_description || product.description,
   price: product.price,
@@ -181,337 +75,293 @@ const transformProductForCard = (product: Product) => ({
   inStock: product.stock_quantity > 0,
   isNew: product.is_new_arrival,
   isBestseller: product.is_bestseller,
-  discount: product.is_on_sale && product.compare_price ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100) : undefined,
-  rating: product.rating || 4.5,
+  originalPrice: product.compare_price > product.price ? product.compare_price : undefined,
+  rating: product.rating || 4.8,
 })
 
-export default async function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  const product = await getProduct(id)
+export default function ProductDetailPage() {
+  const params = useParams()
+  const id = params.id as string
+  
+  const [product, setProduct] = useState<Product | null>(null)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeImage, setActiveImage] = useState(0)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+          headers: { 'x-org-id': '1' }
+        })
+        const data = await response.json()
+        
+        if (data.success && data.data) {
+          setProduct(data.data)
+          
+          // Fetch related
+          const relatedResponse = await fetch(`${API_BASE_URL}/products?category_id=${data.data.category_id}&limit=4`, {
+            headers: { 'x-org-id': '1' }
+          })
+          const relatedData = await relatedResponse.json()
+          setRelatedProducts((relatedData.data || []).filter((p: Product) => String(p.product_id) !== id).slice(0, 4))
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-secondary border-r-transparent mx-auto" />
+          <p className="mt-4 text-primary font-serif italic">Revealing excellence...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!product) {
     notFound()
+    return null
   }
 
-  const relatedProducts = await getRelatedProducts(product.category_id, id)
-
   return (
-    <>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-secondary via-secondary to-secondary/95 py-16 md:py-20 overflow-hidden">
-        {/* Decorative pattern overlay */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
+    <div className="bg-background">
+      {/* Premium Hero / Breadcrumb Section */}
+      <section className="relative overflow-hidden bg-primary py-12 text-white">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-secondary blur-[120px]" />
+          <div className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-secondary blur-[120px]" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-sandal)] hover:text-primary transition-colors group"
-          >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Products
-          </Link>
-          
-          <div className="mt-6 flex items-center gap-4 flex-wrap">
-            <h1 className="font-serif text-3xl font-bold text-[var(--color-sandal)] md:text-4xl lg:text-5xl">
-              {product.product_name}
-            </h1>
-            {product.is_new_arrival && (
-              <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">
-                NEW ARRIVAL
-              </span>
-            )}
-            {product.is_bestseller && (
-              <span className="px-3 py-1 bg-amber-500/20 text-amber-600 text-xs font-semibold rounded-full">
-                BESTSELLER
-              </span>
-            )}
-          </div>
-
-          {/* Breadcrumb */}
-          <div className="mt-2 flex items-center gap-2 text-sm text-[var(--color-sandal)]/70">
-            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-            <span>/</span>
-            <Link href="/products" className="hover:text-primary transition-colors">Products</Link>
-            <span>/</span>
-            <Link href={`/products?category=${product.category_name?.toLowerCase()}`} className="hover:text-primary transition-colors">
-              {product.category_name || "Category"}
-            </Link>
+        <div className="relative z-10 mx-auto max-w-7xl px-6">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-white/50 mb-4">
+                <Link href="/" className="hover:text-secondary transition-colors">Home</Link>
+                <ChevronRight className="h-3 w-3" />
+                <Link href="/products" className="hover:text-secondary transition-colors">Collection</Link>
+                <ChevronRight className="h-3 w-3" />
+                <span className="text-secondary">{product.category_name}</span>
+              </nav>
+              <h1 className="font-serif text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl text-white">
+                {product.product_name}
+              </h1>
+            </div>
+            
+            <div className="flex items-center gap-4">
+               <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:bg-white/20">
+                  <Heart className="h-5 w-5" />
+               </button>
+               <button className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:bg-white/20">
+                  <Share2 className="h-5 w-5" />
+               </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Product Detail Section */}
-      <section className="bg-background py-16 md:py-24">
+      {/* Main product Section */}
+      <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid items-start gap-12 lg:grid-cols-2">
-            {/* Image Gallery */}
-            <AnimatedSection className="space-y-4">
-              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/50 shadow-xl bg-muted group">
-                {product.images && product.images.length > 0 ? (
-                  <Image
-                    src={product.images.find(img => img.is_primary)?.image_url || product.images[0].image_url}
-                    alt={product.product_name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                    <Package className="h-16 w-16 text-muted-foreground/30" />
-                  </div>
-                )}
-
-                {/* Sale badge */}
-                {product.is_on_sale && product.compare_price && product.compare_price > product.price && (
-                  <div className="absolute top-4 left-4 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
-                    {Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}% OFF
-                  </div>
-                )}
-
-                {/* Stock status */}
-                <div className="absolute top-4 right-4 z-10">
-                  {product.stock_quantity > 0 ? (
-                    <div className="bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
-                      <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                      In Stock ({product.stock_quantity})
-                    </div>
+          <div className="grid gap-16 lg:grid-cols-2">
+            
+            {/* Gallery */}
+            <AnimatedSection>
+              <div className="sticky top-24 space-y-6">
+                <div className="group relative aspect-square overflow-hidden rounded-[2rem] bg-muted shadow-2xl transition-all">
+                  {product.images?.[activeImage] ? (
+                    <Image
+                      src={product.images[activeImage].image_url}
+                      alt={product.product_name}
+                      fill
+                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                      priority
+                    />
                   ) : (
-                    <div className="bg-red-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      Out of Stock
+                    <div className="flex h-full items-center justify-center bg-primary/5">
+                      <Package className="h-20 w-20 text-primary/10" />
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* Thumbnail gallery */}
-              {product.images && product.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {product.images.slice(0, 4).map((image, index) => (
-                    <div 
-                      key={index} 
-                      className="relative aspect-square rounded-lg overflow-hidden border border-border/50 cursor-pointer hover:border-primary transition-colors"
-                    >
-                      <Image
-                        src={image.image_url}
-                        alt={`${product.product_name} - View ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 25vw, 10vw"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </AnimatedSection>
-
-            {/* Product Details */}
-            <AnimatedSection delay={150}>
-              <div>
-                {/* Category and SKU */}
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
-                    {product.category_name || "Uncategorized"}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    SKU: {product.sku || "N/A"}
-                  </span>
-                </div>
-
-                {/* Title and price */}
-                <h2 className="mt-6 font-serif text-2xl font-bold text-foreground md:text-3xl">
-                  {product.product_name}
-                </h2>
-                
-                <div className="mt-4 flex items-baseline gap-3">
-                  <p className="text-4xl font-bold text-primary">
-                    {"₹"}{product.price.toLocaleString("en-IN")}
-                  </p>
-                  {product.compare_price && product.compare_price > product.price && (
-                    <p className="text-lg text-muted-foreground line-through">
-                      {"₹"}{product.compare_price.toLocaleString("en-IN")}
-                    </p>
-                  )}
-                </div>
-
-                {/* Rating */}
-                {product.rating && (
-                  <div className="mt-4 flex items-center gap-2">
-                    <div className="flex gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(product.rating || 0)
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      ({Math.floor(Math.random() * 50) + 10} reviews)
-                    </span>
-                  </div>
-                )}
-
-                {/* Description */}
-                <div className="mt-6 space-y-4">
-                  <p className="leading-relaxed text-muted-foreground">
-                    {product.description}
-                  </p>
-                  {product.short_description && (
-                    <p className="text-sm text-muted-foreground/80 italic">
-                      {product.short_description}
-                    </p>
-                  )}
-                </div>
-
-                {/* Key Features */}
-                <ul className="mt-8 flex flex-col gap-3">
-                  {features.map((feature) => (
-                    <li
-                      key={feature.text}
-                      className="flex items-center gap-3 text-sm text-foreground"
-                    >
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10">
-                        <feature.icon className="h-3.5 w-3.5 text-primary" />
-                      </div>
-                      {feature.text}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Product Specifications */}
-                {(product.material || product.color || product.dimensions || product.weight) && (
-                  <div className="mt-8 p-6 bg-muted/30 rounded-xl border border-border/50">
-                    <h3 className="font-serif text-lg font-semibold text-foreground mb-4">
-                      Specifications
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      {product.material && (
-                        <div>
-                          <span className="text-muted-foreground">Material:</span>
-                          <p className="font-medium text-foreground">{product.material}</p>
-                        </div>
-                      )}
-                      {product.color && (
-                        <div>
-                          <span className="text-muted-foreground">Color:</span>
-                          <p className="font-medium text-foreground">{product.color}</p>
-                        </div>
-                      )}
-                      {product.dimensions && (
-                        <div>
-                          <span className="text-muted-foreground">Dimensions:</span>
-                          <p className="font-medium text-foreground">{product.dimensions}</p>
-                        </div>
-                      )}
-                      {product.weight && (
-                        <div>
-                          <span className="text-muted-foreground">Weight:</span>
-                          <p className="font-medium text-foreground">{product.weight} kg</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Delivery info */}
-                <div className="mt-6 flex items-center gap-6 p-4 bg-primary/5 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    <Truck className="h-5 w-5 text-primary" />
-                    <span className="text-sm">Free Delivery</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-primary" />
-                    <span className="text-sm">2-Year Warranty</span>
+                  
+                  {/* Floating Badges */}
+                  <div className="absolute top-6 left-6 flex flex-col gap-2">
+                    {product.is_new_arrival && (
+                      <span className="rounded-full bg-secondary px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-secondary-foreground shadow-lg">New Arrival</span>
+                    )}
+                    {product.is_bestseller && (
+                      <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary-foreground shadow-lg border border-white/10">Bestseller</span>
+                    )}
                   </div>
                 </div>
 
-                {/* Product Actions - Client Component */}
-                <ProductActions product={transformProductForCard(product)} />
-              </div>
-            </AnimatedSection>
-          </div>
-        </div>
-      </section>
-
-      {/* Reviews Section */}
-      <section className="bg-muted py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <AnimatedSection className="text-center">
-            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Reviews
-            </span>
-            <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-              What Customers Say
-            </h2>
-          </AnimatedSection>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {reviews.map((review, i) => (
-              <AnimatedSection key={review.name} delay={i * 100}>
-                <div className="rounded-xl border border-border bg-card p-6 shadow-sm hover:shadow-md transition-all">
-                  <div className="flex gap-1">
-                    {Array.from({ length: review.rating }).map((_, j) => (
-                      <Star
-                        key={j}
-                        className="h-4 w-4 fill-primary text-primary"
-                      />
+                {/* Thumbnails */}
+                {product.images && product.images.length > 1 && (
+                  <div className="grid grid-cols-4 gap-4">
+                    {product.images.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImage(i)}
+                        className={`relative aspect-square overflow-hidden rounded-2xl border-2 transition-all ${activeImage === i ? 'border-secondary scale-95 shadow-lg' : 'border-transparent hover:border-secondary/30'}`}
+                      >
+                        <Image src={img.image_url} alt="" fill className="object-cover" />
+                      </button>
                     ))}
                   </div>
-                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground italic">
-                    {`"${review.text}"`}
-                  </p>
-                  <div className="mt-4 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-semibold text-primary">
-                        {review.name[0]}
-                      </span>
-                    </div>
-                    <p className="text-sm font-semibold text-foreground">
-                      {review.name}
-                    </p>
+                )}
+              </div>
+            </AnimatedSection>
+
+            {/* Content */}
+            <AnimatedSection delay={200}>
+              <div className="flex flex-col h-full">
+                <div className="mb-8 flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-secondary">
+                    {product.brand || "Authentic Collection"}
+                  </span>
+                  <div className="flex items-center gap-1.5 bg-secondary/10 px-3 py-1 rounded-full">
+                    <Star className="h-3 w-3 fill-secondary text-secondary" />
+                    <span className="text-xs font-bold text-primary">4.8 / 5.0</span>
                   </div>
                 </div>
+
+                <h2 className="font-serif text-3xl font-bold text-primary md:text-5xl leading-tight mb-6">
+                  Fine Artistry in Every Detail
+                </h2>
+
+                <div className="mb-8 flex items-baseline gap-4">
+                  <span className="font-serif text-4xl font-bold text-primary">₹{product.price.toLocaleString("en-IN")}</span>
+                  {product.compare_price > product.price && (
+                    <span className="text-xl text-muted-foreground line-through opacity-50">₹{product.compare_price.toLocaleString("en-IN")}</span>
+                  )}
+                  {product.compare_price > product.price && (
+                    <span className="rounded-lg bg-green-500/10 px-2.5 py-1 text-xs font-bold text-green-600">
+                      -{Math.round(((product.compare_price - product.price) / product.compare_price) * 100)}%
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-lg leading-relaxed text-muted-foreground font-light mb-8 italic border-l-2 border-secondary pl-6">
+                  {product.short_description || "Experience the perfect blend of heritage and modern luxury. Each piece is meticulously curated to transform your living space into a sanctuary of elegance."}
+                </p>
+
+                {/* Specifications Grid */}
+                <div className="grid grid-cols-2 gap-4 mb-10">
+                   {[
+                     { label: "Material", value: product.material },
+                     { label: "Dimensions", value: product.dimensions },
+                     { label: "Collection", value: product.category_name },
+                     { label: "Availability", value: product.stock_quantity > 0 ? "In Stock" : "Limited Release" }
+                   ].map((spec, i) => spec.value && (
+                     <div key={i} className="rounded-2xl bg-muted/50 p-4 border border-border/40">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">{spec.label}</p>
+                        <p className="text-sm font-bold text-primary">{spec.value}</p>
+                     </div>
+                   ))}
+                </div>
+
+                {/* Main Action Component */}
+                <div className="mt-auto">
+                   <ProductActions product={transformProductForCard(product)} />
+                </div>
+
+                {/* Trust Section */}
+                <div className="mt-12 grid grid-cols-2 gap-6 pt-12 border-t border-border/60">
+                   <div className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
+                         <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <div>
+                         <p className="text-xs font-bold text-primary uppercase tracking-tighter">Lifetime Guarantee</p>
+                         <p className="text-[10px] text-muted-foreground mt-0.5">Authenticity & Quality Certified</p>
+                      </div>
+                   </div>
+                   <div className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
+                         <Truck className="h-5 w-5" />
+                      </div>
+                      <div>
+                         <p className="text-xs font-bold text-primary uppercase tracking-tighter">Artisan Handling</p>
+                         <p className="text-[10px] text-muted-foreground mt-0.5">Premium pan-India delivery</p>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* Extended Product Story / Description */}
+      <section className="bg-muted/30 py-24">
+         <div className="mx-auto max-w-4xl px-6 text-center">
+            <AnimatedSection>
+               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-secondary">The Narrative</span>
+               <h3 className="mt-6 font-serif text-3xl font-bold text-primary md:text-5xl mb-10">Crafted for Connoisseurs</h3>
+               <div className="mx-auto h-0.5 w-16 bg-secondary mb-12" />
+               <div className="text-lg leading-[1.8] text-muted-foreground font-light text-balance space-y-6">
+                  {product.description.split('\n').map((para, i) => (
+                    <p key={i} className="text-primary/70">{para}</p>
+                  ))}
+               </div>
+            </AnimatedSection>
+         </div>
+      </section>
+
+      {/* Reviews */}
+      <section className="py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
+            <AnimatedSection>
+              <h2 className="font-serif text-4xl font-bold text-primary">Guest Impressions</h2>
+              <p className="text-muted-foreground mt-2 font-light">Authentic experiences from our cherished community.</p>
+            </AnimatedSection>
+            <button className="rounded-full bg-primary px-8 py-3 text-xs font-black uppercase tracking-widest text-primary-foreground transition-all hover:bg-secondary hover:text-secondary-foreground">Share Your Experience</button>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3">
+            {reviews.map((review, i) => (
+              <AnimatedSection key={i} delay={i * 100}>
+                 <div className="rounded-3xl border border-border bg-white p-10 shadow-soft transition-all hover:shadow-xl group">
+                   <div className="flex gap-1 mb-8">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
+                      ))}
+                   </div>
+                   <p className="text-lg font-light leading-relaxed italic text-primary/80 mb-10">"{review.text}"</p>
+                   <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center font-bold text-secondary-foreground font-serif">{review.name[0]}</div>
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-widest text-primary">{review.name}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Verified Collector</p>
+                      </div>
+                   </div>
+                 </div>
               </AnimatedSection>
             ))}
           </div>
-
-          {/* Write review button */}
-          <div className="mt-8 text-center">
-            <button className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium">
-              Write a Review
-              <ArrowLeft className="h-4 w-4 rotate-180" />
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* Related Products Section */}
+      {/* Related Selections */}
       {relatedProducts.length > 0 && (
-        <section className="bg-background py-16 md:py-24">
+        <section className="bg-muted/30 py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6">
-            <AnimatedSection className="text-center">
-              <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-                You May Also Like
-              </span>
-              <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-                Related Products
-              </h2>
+            <AnimatedSection className="mb-16">
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-secondary">A Curated Pairing</span>
+              <h2 className="mt-4 font-serif text-4xl font-bold text-primary">Discover Harmony</h2>
             </AnimatedSection>
 
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {relatedProducts.map((p, i) => (
-                <AnimatedSection key={p.product_id} delay={i * 100}>
+                <AnimatedSection key={i} delay={i * 100}>
                   <ProductCard product={transformProductForCard(p)} index={i} />
                 </AnimatedSection>
               ))}
@@ -519,6 +369,6 @@ export default async function ProductDetailPage({
           </div>
         </section>
       )}
-    </>
+    </div>
   )
 }

@@ -3,19 +3,22 @@ import HeroSection from "@/components/HeroSection"
 import ProductsGrid from "@/components/ProductsGrid"
 
 export const metadata: Metadata = {
-  title: "Products - Sacred Samagri",
+  title: "Collection - Mafroosh",
   description:
-    "Explore our divine collection of authentic pooja samagri, incense, idols, diyas, and complete pooja kits.",
+    "Explore our curated selection of premium furniture and home decor designed for the modern lifestyle.",
 }
 
 export default function ProductsPage() {
   return (
-    <>
+    <div className="bg-background">
       <HeroSection
-        title="Explore Our Divine Collection"
-        subtitle="Handpicked sacred essentials for every ritual and celebration"
+        title="The Art of Living"
+        subtitle="Meticulously curated masterpieces for your sanctuary"
+        size="large"
       />
-      <ProductsGrid />
-    </>
+      <div className="-mt-12 relative z-20">
+        <ProductsGrid />
+      </div>
+    </div>
   )
 }

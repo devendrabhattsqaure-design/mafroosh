@@ -180,59 +180,73 @@ export default function ProductsGrid() {
   }
 
   return (
-    <section className="bg-background py-20 md:py-28">
+    <section className="bg-background py-16">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header with filters and sort */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between mb-10">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between mb-12">
           {/* Mobile filter button */}
           <button
             onClick={() => setShowMobileFilter(true)}
-            className="md:hidden flex items-center justify-center gap-2 w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground"
+            className="md:hidden flex items-center justify-between gap-4 w-full bg-white border border-black px-6 py-5 text-black font-bold"
           >
-            <Filter className="h-5 w-5" />
-            <span>Filter Categories</span>
+            <div className="flex items-center gap-3">
+               <Filter className="h-4 w-4" />
+               <span className="uppercase tracking-[0.3em] text-[10px]">Filter Collection</span>
+            </div>
+            <span className="text-secondary uppercase tracking-widest text-[10px]">{activeCategory === 'all' ? 'All' : activeCategory}</span>
           </button>
 
           {/* Desktop categories */}
-          <AnimatedSection className="hidden md:flex flex-wrap items-center gap-3">
+          <AnimatedSection className="hidden md:flex flex-wrap items-center gap-2">
             {categoryOptions.map((cat) => (
               <button
                 key={cat.value}
                 onClick={() => setActiveCategory(cat.value)}
-                className={`relative rounded-xl px-6 py-3 text-sm font-semibold transition-all ${
+                className={`relative px-8 py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all duration-500 ${
                   activeCategory === cat.value
-                    ? "bg-primary text-primary-foreground shadow-lg scale-105"
-                    : "border border-border bg-card text-foreground hover:bg-muted hover:scale-105"
+                    ? "bg-black text-white"
+                    : "bg-white border border-border text-black/60 hover:border-black hover:text-black"
                 }`}
               >
                 {cat.label}
                 {cat.count > 0 && (
-                  <span className={`absolute -top-2 -right-2 text-xs w-5 h-5 rounded-full flex items-center justify-center ${
+                  <span className={`ml-3 text-[9px] font-medium ${
                     activeCategory === cat.value
-                      ? "bg-primary-foreground text-primary"
-                      : "bg-primary text-primary-foreground"
+                      ? "text-secondary"
+                      : "text-muted-foreground/50"
                   }`}>
                     {cat.count}
                   </span>
+                )}
+                {activeCategory === cat.value && (
+                  <motion.div 
+                    layoutId="activeCategory"
+                    className="absolute bottom-0 left-0 w-full h-[3px] bg-secondary"
+                  />
                 )}
               </button>
             ))}
           </AnimatedSection>
 
           {/* Sort dropdown */}
-          <AnimatedSection delay={100} className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden sm:block">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
-            >
-              <option value="default">Featured</option>
-              <option value="newest">Newest First</option>
-              <option value="bestseller">Bestseller</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
+          <AnimatedSection delay={100} className="flex items-center gap-6">
+            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/40 hidden sm:block">Sort By</span>
+            <div className="relative group">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="appearance-none bg-white border border-border rounded-none px-10 py-4 pr-14 text-[10px] font-bold uppercase tracking-[0.3em] text-black focus:outline-none focus:border-black transition-all cursor-pointer"
+              >
+                <option value="default">Featured</option>
+                <option value="newest">Newest</option>
+                <option value="bestseller">Best Selling</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+              </select>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">
+                 <Filter className="h-3 w-3" />
+              </div>
+            </div>
           </AnimatedSection>
         </div>
 

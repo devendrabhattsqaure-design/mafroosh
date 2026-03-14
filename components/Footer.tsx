@@ -18,36 +18,35 @@ const categories = [
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="bg-primary text-white">
+      <div className="mx-auto max-w-7xl px-6 py-24">
+        <div className="grid gap-16 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                <Sofa className="h-5 w-5 text-primary-foreground" />
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-secondary-foreground shadow-lg transition-transform group-hover:rotate-12">
+                <Sofa className="h-6 w-6" />
               </div>
-              <span className="font-serif text-xl font-bold text-[var(--color-gold)]">
+              <span className="font-serif text-2xl font-bold text-white tracking-wide">
                 Mafroosh
               </span>
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-secondary-foreground/80">
-              Premium furniture and home decor that transforms your spaces into elegant sanctuaries.
-              Your trusted choice for quality and style.
+            <p className="mt-6 text-sm leading-relaxed text-white/60 font-light">
+              Designing sanctuaries since 2010. We craft premium furniture and home decor that transforms your living spaces into elegant experiences.
             </p>
           </div>
 
           {/* Quick links */}
           <div>
-            <h3 className="font-serif text-lg font-semibold text-[var(--color-gold)]">
-              Quick Links
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-secondary mb-8">
+              Explore
             </h3>
-            <ul className="mt-4 flex flex-col gap-3">
+            <ul className="flex flex-col gap-4">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-secondary-foreground/80 transition-colors hover:text-primary"
+                    className="text-sm text-white/70 transition-all hover:text-secondary hover:translate-x-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -58,15 +57,15 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h3 className="font-serif text-lg font-semibold text-[var(--color-gold)]">
-              Categories
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-secondary mb-8">
+              Collections
             </h3>
-            <ul className="mt-4 flex flex-col gap-3">
+            <ul className="flex flex-col gap-4">
               {categories.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-secondary-foreground/80 transition-colors hover:text-primary"
+                    className="text-sm text-white/70 transition-all hover:text-secondary hover:translate-x-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -77,28 +76,28 @@ export default function Footer() {
 
           {/* Contact info */}
           <div>
-            <h3 className="font-serif text-lg font-semibold text-[var(--color-gold)]">
-              Contact Us
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-secondary mb-8">
+              Atelier
             </h3>
-            <ul className="mt-4 flex flex-col gap-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span className="text-sm text-secondary-foreground/80">
+            <ul className="flex flex-col gap-6">
+              <li className="flex items-start gap-4">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
+                <span className="text-sm text-white/70 leading-relaxed font-light">
                   529C/011-CC, Ring Road, Vikas Nagar,
                   <br />
                   Lucknow, India - 226022
                 </span>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-4 w-4 shrink-0 text-primary" />
-                <span className="text-sm text-secondary-foreground/80">
-                  +91 9621374263
+              <li className="flex items-center gap-4">
+                <Phone className="h-4 w-4 shrink-0 text-secondary" />
+                <span className="text-sm text-white/70 font-light">
+                  +91 96213 74263
                 </span>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                <span className="text-sm text-secondary-foreground/80">
-                  info@mafroosh.com
+              <li className="flex items-center gap-4">
+                <Mail className="h-4 w-4 shrink-0 text-secondary" />
+                <span className="text-sm text-white/70 font-light">
+                  concierge@mafroosh.com
                 </span>
               </li>
             </ul>
@@ -106,14 +105,15 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="mt-12 border-t border-secondary-foreground/20 pt-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-sm text-secondary-foreground/60">
-              &copy; {new Date().getFullYear()} Mafroosh. All rights reserved.
+        <div className="mt-20 border-t border-white/10 pt-10">
+          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+            <p className="text-[10px] uppercase tracking-widest text-white/40">
+              &copy; {new Date().getFullYear()} Mafroosh - Artisan Furniture.
             </p>
-            <p className="text-sm text-secondary-foreground/60">
-              Premium furniture and decor for elegant living
-            </p>
+            <div className="flex gap-8">
+               <Link href="/privacy" className="text-[10px] uppercase tracking-widest text-white/40 hover:text-secondary transition-colors">Privacy</Link>
+               <Link href="/terms" className="text-[10px] uppercase tracking-widest text-white/40 hover:text-secondary transition-colors">Terms</Link>
+            </div>
           </div>
         </div>
       </div>

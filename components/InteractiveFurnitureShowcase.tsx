@@ -111,21 +111,23 @@ export default function InteractiveFurnitureShowcase() {
   }
 
   return (
-    <section className="bg-background py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-6">
-        <AnimatedSection className="text-center mb-12">
-          <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Explore Our Collection
-          </span>
-          <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-            Interactive Room Showcase
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
-            Click on any furniture item in the room to explore details and add to your cart
-          </p>
-        </AnimatedSection>
+    <section className="bg-white py-32 md:py-48 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-8">
+        <div className="grid lg:grid-cols-3 gap-16 items-start mb-20">
+          <AnimatedSection className="lg:col-span-1">
+            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-6 block">
+              Experience
+            </span>
+            <h2 className="font-serif text-5xl font-medium text-black md:text-6xl tracking-tighter mb-8 leading-tight">
+              Interactive <br /> Living Spaces
+            </h2>
+            <div className="h-0.5 w-16 bg-secondary mb-10" />
+            <p className="text-muted-foreground/80 leading-relaxed font-light tracking-wide text-lg">
+              Explore our curated environments. Click on the golden markers to discover the pieces that define the room's character and add them directly to your collection.
+            </p>
+          </AnimatedSection>
 
-        <AnimatedSection className="relative mx-auto max-w-4xl">
+          <AnimatedSection className="lg:col-span-2 relative">
           {/* Main showcase image */}
           <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-muted">
             <Image
@@ -164,17 +166,21 @@ export default function InteractiveFurnitureShowcase() {
                     className="relative group"
                     aria-label={`Click to view ${hotspot.name}`}
                   >
-                    {/* Pulsing background */}
-                    {/* <div className="absolute inset-0 rounded-full bg-primary/30 animate-pulse" style={{width: 56, height: 56, marginLeft: -28, marginTop: -28}} /> */}
-                    
-                    {/* Hotspot circle with cart icon */}
-                    <div className="relative w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer group-hover:bg-primary/90">
-                      <ShoppingCart className="w-6 h-6 text-primary-foreground" />
+                    {/* Elegant Hotspot Marker */}
+                    <div className="relative flex items-center justify-center">
+                      {/* Pulse effect */}
+                      <div className="absolute h-10 w-10 rounded-full bg-secondary/30 animate-ping opacity-75" />
                       
-                      {/* Quick add indicator */}
-                      {/* <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-secondary-foreground"> <PlusIcon /> </span>
-                      </div> */}
+                      {/* Core circle */}
+                      <div className="relative h-6 w-6 rounded-full bg-secondary border-2 border-white shadow-xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-125">
+                         <div className="h-full w-full bg-gradient-to-tr from-secondary/80 to-white/20" />
+                      </div>
+                      
+                      {/* Label that appears on hover */}
+                      <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 whitespace-nowrap shadow-2xl">
+                        {hotspot.label}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-black" />
+                      </div>
                     </div>
 
                     {/* Quick add button (appears on hover) */}
@@ -282,6 +288,7 @@ export default function InteractiveFurnitureShowcase() {
           )}
         </AnimatedSection>
       </div>
-    </section>
-  )
+    </div>
+  </section>
+)
 }
