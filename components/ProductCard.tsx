@@ -79,7 +79,7 @@ function ProductCard({
   
   const router = useRouter()
   const { addItem, openCart } = useCartStore()
-  const { showToast } = useToast()
+  const { toast } = useToast()
 
   // Memoized calculations
   const discountedPrice = useMemo(() => 
@@ -132,14 +132,10 @@ function ProductCard({
       originalPrice: product.discount ? product.price : undefined,
       image: product.image,
       category: product.category,
-      quantity: 1,
     })
     
-    // Track analytics
-    
-    
     // Show toast notification
-    showToast({
+    toast({
       title: "Added to cart!",
       description: `${product.name} has been added to your cart.`,
       type: "success",
@@ -148,25 +144,25 @@ function ProductCard({
         label: "View Cart",
         onClick: openCart
       }
-    })
-  }, [product, discountedPrice, addItem, openCart, showToast])
+    } as any) // Cast to any because of potential strict type mismatch with custom ToastActionElement
+  }, [product, discountedPrice, addItem, openCart, toast])
 
   const handleWishlistToggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsWishlisted(prev => !prev)
     
-    showToast({
+    toast({
       title: isWishlisted ? "Removed from wishlist" : "Added to wishlist",
       description: isWishlisted 
         ? `${product.name} has been removed from your wishlist.`
         : `${product.name} has been added to your wishlist.`,
       type: "success",
       duration: 2000,
-    })
+    } as any)
     
    
-  }, [isWishlisted, product.id, product.name, showToast])
+  }, [isWishlisted, product.id, product.name, toast])
 
   const handleQuickView = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -215,11 +211,11 @@ function ProductCard({
     <>
       <SparklerEffect isActive={showSparkler} x={clickPosition.x} y={clickPosition.y} />
       <article
-        className={`group relative flex overflow-hidden rounded-2xl bg-card product-card-lotus transition-all duration-500 ${
-          variant === 'grid' && 'hover:-translate-y-2'
-        } ${isNavigating ? 'pointer-events-none opacity-70' : ''} ${
-          variant === 'list' ? 'hover:shadow-xl' : ''
-        } ${cardClasses[variant]}`}
+        className={`group relative flex overflow-hidden bg-white border border-border transition-all duration-700 ${
+          variant === 'grid' && 'hover:shadow-premium'
+        } ${isNavigating ? 'pointer-events-none opacity-50' : ''} ${
+          cardClasses[variant]
+        }`}
         style={{ animationDelay: `${index * 50}ms` }}
       >
         {/* Image Section */}
@@ -231,16 +227,16 @@ function ProductCard({
           onClick={(e) => isNavigating && e.preventDefault()}
           aria-label={`View details for ${product.name}`}
         >
-          <div className={`relative overflow-hidden rounded-xl ${imageContainerClasses[variant]}`}>
+          <div className={`relative overflow-hidden bg-muted/30 ${imageContainerClasses[variant]}`}>
             {/* Image with loading state */}
-            <div className={`relative w-full h-full transition-all duration-700 ${
-              isImageLoading ? 'blur-sm scale-105' : 'blur-0 scale-100'
+            <div className={`relative w-full h-full transition-all duration-1000 ${
+              isImageLoading ? 'scale-110 blur-xl' : 'scale-100 blur-0'
             }`}>
               <Image
                 src={product.image}
                 alt={product.name}
                 fill
-                className={`object-cover transition-all duration-700 group-hover:scale-110 ${
+                className={`object-cover transition-transform duration-1000 group-hover:scale-110 ${
                   isImageLoading ? 'opacity-0' : 'opacity-100'
                 }`}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -249,134 +245,55 @@ function ProductCard({
               />
             </div>
 
-            {/* Loading skeleton */}
-            {isImageLoading && (
-              <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 animate-pulse" />
-            )}
-
-            {/* Overlay */}
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              aria-hidden="true"
-            />
-
             {/* Badges Container */}
-            <div className="absolute left-2 top-2 flex flex-col gap-1">
+            <div className="absolute left-0 top-6 flex flex-col gap-1 z-20">
               {badges.map((badge, idx) => (
                 <span
                   key={idx}
-                  className={`${badge.color} px-2.5 py-1 text-xs font-bold text-white rounded-full shadow-lg backdrop-blur-sm`}
+                  className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-[0.2em] text-white ${badge.color} shadow-sm`}
                 >
                   {badge.text}
                 </span>
               ))}
             </div>
 
-            {/* Category badge */}
-            <div className="absolute left-2 bottom-2 flex items-center gap-1 rounded-full bg-black/30 px-3 py-1 backdrop-blur-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white">
-                {categoryLabels[product.category] || product.category}
-              </span>
-            </div>
-
-            {/* Quick action buttons */}
-            <div className="absolute inset-x-0 bottom-0 translate-y-full transition-transform duration-400 group-hover:translate-y-0">
-              <div className="flex justify-center gap-2 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                {/* Quick View Button */}
-                {onQuickView && (
-                  <button
-                    onClick={handleQuickView}
-                    className="flex items-center justify-center w-8 h-8 rounded-full bg-white/90 text-gray-800 hover:bg-white transition-transform hover:scale-110"
-                    aria-label="Quick view"
-                    title="Quick view"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
-                )}
-                
-                {/* Wishlist Button */}
+            {/* Hover Actions */}
+            <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex items-center justify-center gap-4">
+                <button
+                  onClick={handleQuickView}
+                  className="w-12 h-12 bg-white text-black flex items-center justify-center hover:bg-secondary hover:text-white transition-colors duration-300 shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100"
+                >
+                  <Eye className="w-5 h-5" />
+                </button>
                 <button
                   onClick={handleWishlistToggle}
-                  className={`flex items-center justify-center w-8 h-8 rounded-full transition-transform hover:scale-110 ${
-                    isWishlisted 
-                      ? 'bg-rose-500 text-white' 
-                      : 'bg-white/90 text-gray-800 hover:bg-white'
+                  className={`w-12 h-12 flex items-center justify-center transition-colors duration-300 shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-200 ${
+                    isWishlisted ? 'bg-rose-500 text-white' : 'bg-white text-black hover:bg-secondary hover:text-white'
                   }`}
-                  aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 >
-                  <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                  <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current' : ''}`} />
                 </button>
-
-                {/* Quick Add Button */}
-                <button
-                  onClick={handleQuickAdd}
-                  disabled={product.inStock === false}
-                  className={`flex items-center justify-center w-8 h-8 rounded-full transition-transform hover:scale-110 ${
-                    product.inStock === false
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-primary text-white hover:bg-primary-dark'
-                  }`}
-                  aria-label="Quick add to cart"
-                  title={product.inStock === false ? "Out of stock" : "Add to cart"}
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                </button>
-              </div>
             </div>
-
-            {/* Quick add feedback indicator */}
-            {showQuickAddFeedback && (
-              <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-sm">
-                <div className="bg-white rounded-full p-2 shadow-lg animate-bounce">
-                  <ShoppingBag className="h-6 w-6 text-primary" />
-                </div>
-              </div>
-            )}
-
-            {/* Price tag on image (for grid view) */}
-            {variant === 'grid' && (
-              <div className="absolute right-2 bottom-2 translate-y-4 opacity-0 transition-all duration-400 group-hover:translate-y-0 group-hover:opacity-100">
-                <span className="rounded-lg bg-white/90 px-3 py-1.5 text-lg font-bold text-gray-900 shadow-lg backdrop-blur-sm">
-                  {formatPrice(discountedPrice)}
-                </span>
-              </div>
-            )}
           </div>
         </Link>
 
         {/* Content Section */}
-        <div className={`relative flex flex-1 flex-col ${contentClasses[variant]}`}>
-          {/* Rating (if available) */}
-          {product.rating && (
-            <div className="flex items-center gap-1 mb-1">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-3.5 w-3.5 ${
-                      i < Math.floor(product.rating!)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              {product.reviewCount && (
-                <span className="text-xs text-muted-foreground">
-                  ({product.reviewCount})
-                </span>
-              )}
-            </div>
-          )}
+        <div className={`relative flex flex-1 flex-col ${contentClasses[variant]} border-t border-border/10`}>
+          {/* Category */}
+          <div className="mb-3">
+            <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-muted-foreground/60">
+               {categoryLabels[product.category] || product.category}
+            </span>
+          </div>
 
           {/* Product name */}
           <Link 
             href={`/products/${product.id}`} 
-            className="hover:underline decoration-primary underline-offset-2"
+            className="group/title"
             onClick={(e) => isNavigating && e.preventDefault()}
           >
-            <h3 className={`font-serif font-bold text-foreground leading-snug tracking-wide ${
-              variant === 'compact' ? 'text-sm' : 'text-lg'
+            <h3 className={`font-serif text-foreground transition-colors group-hover/title:text-secondary leading-tight ${
+              variant === 'compact' ? 'text-base' : 'text-2xl'
             }`}>
               {product.name}
             </h3>
@@ -384,103 +301,38 @@ function ProductCard({
 
           {/* Description */}
           {variant !== 'compact' && (
-            <p className={`mt-1.5 line-clamp-2 text-muted-foreground ${
-              variant === 'list' ? 'text-sm' : 'text-[13px]'
-            }`}>
+            <p className="mt-4 line-clamp-2 text-muted-foreground/80 leading-relaxed font-light text-sm tracking-wide">
               {product.description}
             </p>
           )}
 
-          {/* Product specs (for list view) */}
-          {variant === 'list' && product.material && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Material: {product.material}
-              {product.dimensions && ` | Dimensions: ${product.dimensions}`}
-            </p>
-          )}
-
-          {/* Color options (if available) */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="flex gap-1 mt-2">
-              {product.colors.slice(0, 3).map((color, idx) => (
-                <div
-                  key={idx}
-                  className="w-4 h-4 rounded-full border border-gray-300"
-                  style={{ backgroundColor: color }}
-                  title={`Available in ${color}`}
-                />
-              ))}
-              {product.colors.length > 3 && (
-                <span className="text-xs text-muted-foreground">
-                  +{product.colors.length - 3}
-                </span>
-              )}
-            </div>
-          )}
-
           <div className="flex-1" />
 
-          {/* Price and CTA row */}
-          <div className="mt-4 flex items-center justify-between">
-            <div className="flex flex-col">
-              <div className="flex items-baseline gap-2">
-                <span className={`font-bold text-secondary ${
-                  variant === 'compact' ? 'text-base' : 'text-xl'
-                }`}>
+          {/* Price and CTA */}
+          <div className="mt-8 pt-6 border-t border-border/40 flex items-center justify-between">
+            <div className="flex items-baseline gap-3">
+                <span className="font-bold text-black text-xl tracking-tight">
                   {formatPrice(discountedPrice)}
                 </span>
                 {product.discount && (
-                  <span className="text-xs line-through text-muted-foreground">
+                  <span className="text-xs line-through text-muted-foreground/40 font-light">
                     {formatPrice(product.price)}
                   </span>
                 )}
-              </div>
-              {product.discount && (
-                <span className="text-xs text-green-600 font-semibold">
-                  Save {formatPrice(savingsAmount)}
-                </span>
-              )}
             </div>
 
-            {/* Add to cart button */}
             <button
               onClick={handleQuickAdd}
               disabled={product.inStock === false}
-              className={`flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
+              className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 ${
                 product.inStock === false
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-primary text-primary-foreground hover:bg-primary-dark'
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                  : 'bg-black text-white hover:bg-secondary shadow-[3px_3px_0px_0px_rgba(212,175,55,0.3)] hover:shadow-none translate-x-[-1px] translate-y-[-1px] hover:translate-x-0 hover:translate-y-0'
               }`}
-              aria-label={product.inStock === false ? "Out of stock" : "Add to cart"}
             >
-              <ShoppingBag className="h-4 w-4" />
+              Add to Cart
             </button>
           </div>
-
-          {/* View details button (for list view) */}
-          {variant === 'list' && (
-            <button
-              onClick={handleViewDetails}
-              className="mt-3 flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-            >
-              <span>View Details</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-            </button>
-          )}
-        </div>
-
-        {/* Decorative lotus petals */}
-        <div className="pointer-events-none absolute -bottom-2 -right-2 opacity-0 transition-all duration-700 group-hover:opacity-100" aria-hidden="true">
-          <svg viewBox="0 0 60 60" fill="none" className="h-16 w-16">
-            <path d="M60 60 Q40 50 50 30 Q55 45 60 60Z" fill="var(--color-saffron)" opacity="0.12" />
-            <path d="M60 60 Q35 55 40 35 Q50 50 60 60Z" fill="var(--color-deep-maroon)" opacity="0.08" />
-          </svg>
-        </div>
-        <div className="pointer-events-none absolute -left-2 -top-2 opacity-0 transition-all duration-700 group-hover:opacity-100" aria-hidden="true">
-          <svg viewBox="0 0 60 60" fill="none" className="h-16 w-16">
-            <path d="M0 0 Q20 10 10 30 Q5 15 0 0Z" fill="var(--color-saffron)" opacity="0.12" />
-            <path d="M0 0 Q25 5 20 25 Q10 10 0 0Z" fill="var(--color-deep-maroon)" opacity="0.08" />
-          </svg>
         </div>
       </article>
     </>

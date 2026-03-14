@@ -21,36 +21,36 @@ export default function Navbar() {
   const { openCart } = useCartActions()
 
   return (
-    <header className="sticky top-0 z-50 bg-[var(--color-cream)]/95 backdrop-blur-md border-b border-border">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-8 py-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <Image
             src="/images/Logo New.png"
             alt="Mafroosh Logo"
             width={160}
             height={40}
-            className="object-contain"
+            className="object-contain transition-transform group-hover:scale-105"
           />
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-12 lg:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
             return (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`group relative py-1 text-sm font-medium tracking-wide transition-colors ${
+                  className={`group relative py-2 text-[10px] font-bold uppercase tracking-[0.3em] transition-all duration-300 ${
                     isActive
                       ? "text-primary"
-                      : "text-foreground hover:text-primary"
+                      : "text-muted-foreground hover:text-primary"
                   }`}
                 >
                   {link.label}
                   <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                    className={`absolute bottom-0 left-0 h-[1.5px] bg-secondary transition-all duration-500 ease-in-out ${
                       isActive ? "w-full" : "w-0 group-hover:w-full"
                     }`}
                   />
@@ -61,16 +61,16 @@ export default function Navbar() {
         </ul>
 
         {/* Cart + CTA + Mobile toggle */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8">
           {/* Cart Icon */}
           <button
             onClick={openCart}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl text-foreground hover:bg-primary/10 transition-colors"
+            className="group relative flex h-10 w-10 items-center justify-center text-foreground transition-all hover:scale-110"
             aria-label="Open cart"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
             {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground animate-in zoom-in">
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-primary text-[8px] font-bold text-white shadow-lg animate-in fade-in zoom-in duration-300">
                 {itemCount}
               </span>
             )}
@@ -78,13 +78,13 @@ export default function Navbar() {
 
           <Link
             href="/products"
-            className="hidden rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:bg-secondary hover:shadow-md md:inline-block"
+            className="hidden px-8 py-3 bg-primary text-white text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-secondary hover:text-white lg:inline-block shadow-[4px_4px_0px_0px_rgba(212,175,55,0.4)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
           >
-            Shop Now
+            Explore Shop
           </Link>
 
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-foreground md:hidden"
+            className="flex h-10 w-10 items-center justify-center text-foreground lg:hidden hover:bg-muted"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
@@ -95,8 +95,8 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border bg-[var(--color-cream)] px-6 pb-6 md:hidden">
-          <ul className="flex flex-col gap-1 pt-4">
+        <div className="fixed inset-0 top-[89px] z-50 bg-white px-8 pb-10 md:hidden animate-in fade-in slide-in-from-right duration-500">
+          <ul className="flex flex-col gap-6 pt-12">
             {navLinks.map((link) => {
               const isActive = pathname === link.href
               return (
@@ -104,10 +104,10 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    className={`block py-2 text-sm font-bold uppercase tracking-[0.2em] transition-all ${
                       isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-muted"
+                        ? "text-secondary border-b border-secondary"
+                        : "text-muted-foreground hover:text-primary"
                     }`}
                   >
                     {link.label}
@@ -119,9 +119,9 @@ export default function Navbar() {
           <Link
             href="/products"
             onClick={() => setMobileOpen(false)}
-            className="mt-4 block rounded-xl bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground shadow-sm"
+            className="mt-16 block w-full py-5 bg-primary text-center text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-xl"
           >
-            Shop Now
+            Explore Collection
           </Link>
         </div>
       )}

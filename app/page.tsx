@@ -163,24 +163,25 @@ export default function HomePage() {
     <>
       {/* Hero Section */}
       <HeroSection
-        title="Transform Your Home with Elegance"
-        subtitle="Premium Furniture & Decor by Mafroosh"
+        title="Curating Elegance for Every Corner"
+        subtitle="Exclusive Premium Decor, Artisanal Accents & Statement Pieces for the Modern Sanctuary"
         size="large"
         videoSrc="/images/video2.mp4"
         videoType="mp4"
       >
-        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="flex flex-col items-center justify-center gap-8 sm:flex-row">
           <Link
             href="/products"
-            className="rounded-xl border-2 border-[var(--color-gold)] bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
+            className="group relative px-12 py-5 bg-secondary text-white text-[11px] font-bold uppercase tracking-[0.3em] overflow-hidden transition-all hover:pr-16"
           >
-            Explore Products
+            <span className="relative z-10 transition-all group-hover:tracking-[0.4em]">Shop Collection</span>
+            <ArrowRight className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 transition-all group-hover:opacity-100 group-hover:right-8 h-4 w-4" />
           </Link>
           <Link
             href="/contact"
-            className="rounded-xl border-2 border-[var(--color-gold)] px-8 py-3.5 font-semibold text-[var(--color-gold)] transition-all hover:bg-[var(--color-gold)]/10"
+            className="px-12 py-5 border border-white/40 text-white text-[11px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-white hover:text-black"
           >
-            Visit Our Store
+            Design Consultation
           </Link>
         </div>
       </HeroSection>
@@ -188,96 +189,75 @@ export default function HomePage() {
       {/* Interactive Furniture Showcase */}
       <InteractiveFurnitureShowcase />
 
-      {/* Categories Section with Images */}
+      {/* Categories Section */}
       {categories.length > 0 && (
-        <section className="bg-background py-20 md:py-28">
+        <section className="py-24 md:py-32">
           <div className="mx-auto max-w-7xl px-6">
-            <AnimatedSection className="text-center mb-12">
-              <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-                Shop by Category
+            <AnimatedSection className="text-center mb-16">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-secondary">
+                Our Collections
               </span>
-              <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-                Explore Our Collections
+              <h2 className="mt-4 font-serif text-4xl font-bold text-foreground md:text-5xl lg:text-6xl text-balance">
+                Shop by Space
               </h2>
-              <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
-                Browse through our carefully curated categories to find the perfect pieces for your home
-              </p>
+              <div className="mx-auto mt-6 h-1 w-20 bg-secondary" />
             </AnimatedSection>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {categories.slice(0, 4).map((category, index) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-16">
+              {categories.map((category, index) => (
                 <AnimatedSection key={category.category_id} delay={index * 100}>
                   <Link
                     href={`/products?category=${category.slug}`}
-                    className="group relative block overflow-hidden rounded-2xl bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    className="group flex flex-col items-center text-center gap-6"
                   >
-                    {/* Category Image */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 overflow-hidden rounded-full border-2 border-transparent group-hover:border-secondary transition-all duration-700 shadow-sm hover:shadow-2xl bg-muted ring-offset-4 ring-0 group-hover:ring-2 ring-secondary/20">
                       <Image
                         src={category.image_url || '/images/category-placeholder.jpg'}
                         alt={category.category_name}
                         fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                        sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 176px"
                       />
-                      
-                      {/* Overlay gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      
-                      {/* Category name and description */}
-                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <h3 className="font-serif text-xl font-bold mb-2">
-                          {category.category_name}
-                        </h3>
-                        {category.description && (
-                          <p className="text-sm text-white/80 line-clamp-2 mb-3">
-                            {category.description}
-                          </p>
-                        )}
-                        
-                        {/* Shop now indicator */}
-                        <div className="flex items-center gap-2 text-sm font-medium text-white/90 group-hover:text-white transition-colors">
-                          <span>Shop Now</span>
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </div>
-                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-2">
+                      <h3 className="font-serif text-xl font-medium text-black group-hover:text-secondary transition-colors duration-500">
+                        {category.category_name}
+                      </h3>
+                      <div className="h-0.5 w-0 bg-secondary transition-all duration-500 group-hover:w-8" />
                     </div>
                   </Link>
                 </AnimatedSection>
               ))}
             </div>
-
-            {/* View All Categories Button */}
-            <AnimatedSection className="mt-12 text-center">
-              <Link
-                href="/categories"
-                className="inline-flex items-center gap-2 rounded-xl bg-secondary px-8 py-3.5 font-semibold text-secondary-foreground transition-all hover:bg-secondary/90 hover:shadow-md group"
-              >
-                View All Categories
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </AnimatedSection>
           </div>
         </section>
       )}
 
       {/* Featured Products */}
-      <section className="bg-background py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6">
-          <AnimatedSection className="text-center">
-            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Our Collection
-            </span>
-            <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-              Featured Furniture & Decor
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
-              Discover our handpicked selection of premium furniture and home decor pieces, crafted with elegance and quality.
-            </p>
-          </AnimatedSection>
+      <section className="py-32 md:py-48">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8 border-b border-black pb-12">
+            <AnimatedSection>
+              <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-4 block">
+                The Collection
+              </span>
+              <h2 className="font-serif text-5xl font-medium text-black md:text-7xl tracking-tighter">
+                Masterpieces in Wood & Fabric
+              </h2>
+            </AnimatedSection>
+            
+            <Link
+              href="/products"
+              className="flex items-center gap-4 text-xs font-bold uppercase tracking-[0.3em] text-black hover:text-secondary transition-all group"
+            >
+              <span>View Full Catalog</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2" />
+            </Link>
+          </div>
 
           {featuredProducts.length > 0 ? (
-            <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
               {featuredProducts.slice(0, 4).map((product, i) => (
                 <AnimatedSection key={product.product_id} delay={i * 100}>
                   <ProductCard product={transformProduct(product)} index={i} />
@@ -285,92 +265,158 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="mt-14 text-center py-12 bg-muted/30 rounded-2xl">
-              <Package className="h-16 w-16 text-primary/40 mx-auto mb-4" />
-              <p className="text-muted-foreground">No featured products available at the moment.</p>
+            <div className="text-center py-32 border border-dashed border-border">
+              <Package className="h-12 w-12 text-muted-foreground/20 mx-auto mb-6" />
+              <p className="text-muted-foreground font-light tracking-widest uppercase text-xs">Curating New Arrivals</p>
             </div>
           )}
+        </div>
+      </section>
 
-          <AnimatedSection className="mt-12 text-center">
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-2 rounded-xl bg-secondary px-8 py-3.5 font-semibold text-secondary-foreground transition-all hover:bg-secondary/90 hover:shadow-md group"
-            >
-              View All Products
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </AnimatedSection>
+      {/* Brand Story / Legacy */}
+      <section className="py-24 md:py-32 overflow-hidden border-t border-border">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="grid lg:grid-cols-2 gap-24 items-center">
+            <div className="relative flex flex-col gap-8">
+              <div className="relative aspect-[4/5] overflow-hidden group border border-border">
+                <Image 
+                  src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000" 
+                  alt="Premium Interior" 
+                  fill 
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+                <div className="absolute inset-x-0 bottom-0 p-10 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-white text-xl font-serif italic">"Curating beauty, one space at a time."</p>
+                </div>
+              </div>
+              
+              <div className="absolute -right-12 -bottom-12 w-2/3 aspect-square hidden xl:block border-8 border-white overflow-hidden shadow-2xl group">
+                <Image 
+                  src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=2000" 
+                  alt="Decor Detail" 
+                  fill 
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+              </div>
+            </div>
+            
+            <AnimatedSection>
+              <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-8 block">
+                Our Heritage
+              </span>
+              <h2 className="font-serif text-6xl font-medium text-black md:text-8xl leading-[0.9] tracking-tighter mb-12">
+                The Legacy <br /> of Elegance
+              </h2>
+              <div className="space-y-8 text-black/60 text-lg leading-relaxed font-light tracking-wide max-w-xl">
+                <p>
+                  For over three decades, Mafroosh has been the premier destination for discerning homeowners looking to infuse their spaces with character. Our journey began with a passion for handcrafted accents that turn a house into a home.
+                </p>
+                <p>
+                  We believe that the smallest details make the biggest impact. From hand-blown glass vases to intricately woven textiles, our curators travel the globe to bring you pieces that are as unique as your story.
+                </p>
+              </div>
+              
+              <div className="mt-20 grid grid-cols-2 gap-12 border-t border-border pt-12">
+                <div>
+                  <h4 className="text-4xl font-serif text-black mb-2">30+</h4>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Years of Curation</p>
+                </div>
+                <div>
+                  <h4 className="text-4xl font-serif text-black mb-2">10k+</h4>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Adorned Homes</p>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
         </div>
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-muted py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6">
-          <AnimatedSection className="text-center">
-            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Why Choose Us
-            </span>
-            <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-              Why Mafroosh is Your Choice
-            </h2>
-          </AnimatedSection>
-
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, i) => (
-              <AnimatedSection key={feature.title} delay={i * 100}>
-                <div className="rounded-xl bg-card p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md text-center">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
-                    <feature.icon className="h-7 w-7 text-primary" />
-                  </div>
-                  <h3 className="mt-5 font-serif text-lg font-semibold text-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {feature.description}
-                  </p>
+      <section className="py-24 md:py-32 border-t border-border">
+        <div className="mx-auto max-w-7xl px-8">
+          <div className="grid lg:grid-cols-2 gap-32 items-center">
+             <AnimatedSection>
+                <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-6 block">
+                  The Mafroosh Standard
+                </span>
+                <h2 className="font-serif text-5xl font-medium text-black md:text-7xl leading-[0.9] tracking-tighter mb-12">
+                  Crafting Perfection <br /> for Your Sanctuary
+                </h2>
+                <p className="text-xl text-muted-foreground/80 leading-relaxed font-light tracking-wide max-w-xl mb-20">
+                  We believe that every home has a soul. Our mission is to provide the pieces that help you express it. Quality, durability, and timeless design are at the heart of everything we do.
+                </p>
+                
+                <div className="grid sm:grid-cols-2 gap-x-12 gap-y-16">
+                   {features.map((f, i) => (
+                     <div key={i} className="flex flex-col gap-4 border-l border-black/5 pl-6 hover:border-secondary transition-colors duration-500">
+                        <div className="text-secondary">
+                           <f.icon className="h-6 w-6" />
+                        </div>
+                        <h4 className="font-serif text-xl font-medium">{f.title}</h4>
+                        <p className="text-sm text-muted-foreground/70 leading-relaxed font-light tracking-wide">{f.description}</p>
+                     </div>
+                   ))}
                 </div>
-              </AnimatedSection>
-            ))}
+             </AnimatedSection>
+             
+             <AnimatedSection className="relative">
+                <div className="aspect-[4/5] overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 shadow-premium">
+                   <Image 
+                     src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace" 
+                     alt="Interior Design Detail" 
+                     fill 
+                     className="object-cover"
+                   />
+                </div>
+                <div className="absolute -bottom-12 -left-12 bg-black p-12 shadow-2xl hidden xl:block max-w-sm">
+                   <p className="text-white font-serif text-2xl italic font-light leading-relaxed">
+                      "Furniture is the foundation of a home's character."
+                   </p>
+                   <div className="mt-8 h-0.5 w-12 bg-secondary" />
+                </div>
+             </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="bg-background py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6">
-          <AnimatedSection className="text-center">
-            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+      <section className="py-24 md:py-32 relative overflow-hidden border-t border-border">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-secondary/5 -skew-x-12 translate-x-1/2" />
+        
+        <div className="mx-auto max-w-7xl px-8 relative z-10">
+          <AnimatedSection className="mb-24 text-center">
+            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-6 block font-sans">
               Testimonials
             </span>
-            <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
-              Love from Our Customers
+            <h2 className="font-serif text-5xl font-medium text-black md:text-7xl tracking-tighter leading-[0.9]">
+              Voices of Satisfaction
             </h2>
           </AnimatedSection>
-
-          <div className="mt-14 grid gap-8 md:grid-cols-3">
+ 
+          <div className="grid gap-8 md:grid-cols-3">
             {testimonials.map((testimonial, i) => (
               <AnimatedSection key={testimonial.name} delay={i * 100}>
-                <div className="rounded-xl border border-border bg-card p-8 shadow-sm hover:shadow-md transition-all">
-                  <div className="flex gap-1">
+                <div className="h-full bg-white p-12 border border-border flex flex-col group hover:shadow-premium transition-all duration-700">
+                  <div className="flex gap-1 mb-8">
                     {Array.from({ length: testimonial.rating }).map((_, j) => (
                       <Star
                         key={j}
-                        className="h-4 w-4 fill-primary text-primary"
+                        className="h-3 w-3 fill-secondary text-secondary"
                       />
                     ))}
                   </div>
-                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground italic">
+                  <p className="text-xl leading-relaxed text-black/70 italic font-light tracking-wide mb-12">
                     {`"${testimonial.text}"`}
                   </p>
-                  <div className="mt-6 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-serif font-bold text-primary">
+                  <div className="mt-auto flex items-center gap-5">
+                    <div className="h-10 w-10 bg-secondary flex items-center justify-center font-serif font-medium text-white text-lg">
                       {testimonial.name[0]}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">
+                      <p className="font-bold text-black uppercase tracking-[0.2em] text-[10px]">
                         {testimonial.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[10px] text-black/30 uppercase tracking-widest mt-1">
                         {testimonial.location}
                       </p>
                     </div>
@@ -383,50 +429,35 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-secondary py-20 md:py-28 relative overflow-hidden">
-        {/* Decorative pattern overlay */}
+      <section className="py-24 md:py-32 relative overflow-hidden border-t border-border">
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] bg-secondary rounded-full blur-[160px] -translate-x-1/2 -translate-y-1/2" />
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
-          <AnimatedSection className="text-center">
-            <h2 className="font-serif text-3xl font-bold text-[var(--color-gold)] md:text-4xl text-balance">
-              Start Creating Your Dream Home Today
+        <div className="mx-auto max-w-4xl px-8 relative z-10 text-center">
+          <AnimatedSection>
+            <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-secondary mb-8 block">
+              Redefine Your Lifestyle
+            </span>
+            <h2 className="font-serif text-6xl font-medium text-black md:text-8xl leading-[0.9] tracking-tighter mb-10">
+              Ready to Define <br /> Your Space?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-secondary-foreground/80 leading-relaxed">
-              Explore our complete collection of premium furniture and decor pieces to bring elegance and comfort to your space.
+            <p className="mx-auto max-max-xl text-lg text-black/50 leading-relaxed font-light tracking-wide mb-16 px-4">
+              Join thousands of satisfied homeowners who have transformed their lives with Mafroosh. Experience the pinnacle of design and comfort.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="flex flex-col items-center justify-center gap-8 sm:flex-row">
               <Link
                 href="/products"
-                className="rounded-xl bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md hover:scale-105"
+                className="px-14 py-6 bg-black text-white text-[11px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-secondary hover:shadow-[0_0_30px_rgba(212,175,55,0.3)]"
               >
-                Shop Now
+                Start Exploring
               </Link>
               <Link
                 href="/contact"
-                className="rounded-xl border-2 border-[var(--color-gold)] px-8 py-3.5 font-semibold text-[var(--color-gold)] transition-all hover:bg-[var(--color-gold)]/10 hover:scale-105"
+                className="px-14 py-6 border border-border text-black text-[11px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-black hover:text-white"
               >
-                Contact Us
+                Get in Touch
               </Link>
-            </div>
-
-            {/* Trust badges */}
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-secondary-foreground/60">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                <span>Secure Payments</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Truck className="h-4 w-4" />
-                <span>Free Shipping*</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4" />
-                <span>2-Year Warranty</span>
-              </div>
             </div>
           </AnimatedSection>
         </div>

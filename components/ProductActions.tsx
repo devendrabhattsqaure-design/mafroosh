@@ -48,11 +48,11 @@ export default function ProductActions({ product }: ProductActionsProps) {
   }
 
   return (
-    <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+    <div className="mt-8 flex flex-col gap-4 sm:flex-row">
       <button
         onClick={handleAddToCart}
         disabled={isAdding}
-        className="flex-1 rounded-xl bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed relative overflow-hidden"
+        className="group relative flex-1 overflow-hidden rounded-full bg-primary px-8 py-4 font-black uppercase tracking-widest text-primary-foreground shadow-2xl transition-all hover:bg-secondary hover:text-secondary-foreground active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
       >
         <AnimatePresence mode="wait">
           {isAdding ? (
@@ -64,7 +64,7 @@ export default function ProductActions({ product }: ProductActionsProps) {
               className="flex items-center justify-center gap-2"
             >
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Adding...</span>
+              <span>Updating...</span>
             </motion.div>
           ) : showSuccess ? (
             <motion.div
@@ -72,10 +72,10 @@ export default function ProductActions({ product }: ProductActionsProps) {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="flex items-center justify-center gap-2 text-green-600 dark:text-green-400"
+              className="flex items-center justify-center gap-2"
             >
               <Check className="h-4 w-4" />
-              <span>Added to Cart!</span>
+              <span>Added to Collection</span>
             </motion.div>
           ) : (
             <motion.span
@@ -83,8 +83,9 @@ export default function ProductActions({ product }: ProductActionsProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              className="flex items-center justify-center gap-2"
             >
-              Add to Cart
+              <span>Add to Collection</span>
             </motion.span>
           )}
         </AnimatePresence>
@@ -94,11 +95,11 @@ export default function ProductActions({ product }: ProductActionsProps) {
         href={`https://wa.me/919621374263?text=Hi, I am interested in ${product.name} (₹${product.price})`}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-xl border-2 border-[#25D366] px-8 py-3.5 font-semibold text-[#25D366] transition-all hover:bg-[#25D366]/10"
+        className="flex items-center justify-center gap-3 rounded-full border-2 border-primary/10 bg-white px-8 py-4 font-black uppercase tracking-widest text-primary transition-all hover:border-[#25D366] hover:text-[#25D366] hover:shadow-xl group"
       >
-        <MessageCircle className="h-5 w-5" />
-        Order on WhatsApp
+        <MessageCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
+        Consult on WhatsApp
       </a>
     </div>
   )
-}
+}

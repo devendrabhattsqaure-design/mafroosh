@@ -19,8 +19,8 @@ export default function HeroSection({
 }: HeroSectionProps) {
   return (
     <section
-      className={`relative overflow-hidden bg-secondary ${
-        size === "large" ? "py-28 md:py-40" : "py-20 md:py-28"
+      className={`relative overflow-hidden bg-primary ${
+        size === "large" ? "py-32 md:py-48" : "py-24 md:py-32"
       }`}
     >
       {/* Video Background */}
@@ -36,52 +36,55 @@ export default function HeroSection({
             <source src={videoSrc} type={`video/${videoType}`} />
             Your browser does not support the video tag.
           </video>
-          {/* Dark overlay to ensure text readability */}
+          {/* Subtle gradient overlay for better text contrast */}
           <div 
-            className="absolute inset-0 bg-black"
-            style={{ opacity: overlayOpacity }}
+            className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"
           />
         </div>
       ) : (
         /* Original animated background - only shows if no video */
-        <>
-          {/* Animated Elegant Background - creates video-like effect */}
-          <div className="pointer-events-none absolute inset-0 animate-elegant-flow opacity-30">
-            <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-burgundy)]/20 via-transparent to-[var(--color-deep-burgundy)]/10" />
+        <div className="absolute inset-0 bg-primary">
+          {/* Animated Elegant Background */}
+          <div className="pointer-events-none absolute inset-0 animate-elegant-flow opacity-20">
+            <div className="absolute inset-0 bg-gradient-to-b from-secondary/10 via-transparent to-black/30" />
           </div>
 
-          {/* Floating light elements - video-like aesthetic */}
+          {/* Floating light elements */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-radial from-[var(--color-gold)]/30 to-transparent rounded-full blur-3xl animate-float-slow" />
-            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-radial from-[var(--color-burgundy)]/20 to-transparent rounded-full blur-3xl animate-float-slower" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-radial from-secondary/20 to-transparent rounded-full blur-3xl animate-float-slow" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-radial from-secondary/10 to-transparent rounded-full blur-3xl animate-float-slower" />
           </div>
-        </>
+        </div>
       )}
 
-      {/* Decorative elements - shown in both modes but with adjusted opacity for video */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className={`absolute left-10 top-10 h-24 w-24 rounded-full bg-primary/10 animate-pulse ${videoSrc ? 'opacity-30' : ''}`} />
-        <div className={`absolute bottom-10 right-10 h-32 w-32 rounded-full bg-primary/5 animate-pulse ${videoSrc ? 'opacity-30' : ''}`} style={{ animationDelay: "1s" }} />
-        <div className={`absolute right-1/4 top-1/3 h-16 w-16 rounded-full bg-[var(--color-gold)]/10 animate-pulse ${videoSrc ? 'opacity-30' : ''}`} style={{ animationDelay: "0.5s" }} />
+      {/* Modern minimalist decorative elements */}
+      <div className="pointer-events-none absolute inset-0 opacity-20">
+        <div className="absolute left-10 top-10 h-32 w-32 border border-secondary/30 rounded-full animate-pulse" />
+        <div className="absolute bottom-10 right-10 h-48 w-48 border border-secondary/20 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 text-center z-10">
+      <div className="relative mx-auto max-w-7xl px-6 text-center z-10 flex flex-col items-center">
+        <div className="mb-8 overflow-hidden">
+           <span className="inline-block px-5 py-2 rounded-none border border-secondary/40 text-secondary text-[10px] font-bold uppercase tracking-[0.4em] animate-fade-in-up">
+              The Art of Living
+           </span>
+        </div>
         <h1
-          className={`animate-fade-in-up font-serif font-bold text-balance text-[var(--color-gold)] ${
+          className={`animate-fade-in-up font-serif font-medium text-balance text-white leading-[1.05] tracking-tight ${
             size === "large"
-              ? "text-4xl md:text-6xl lg:text-7xl"
-              : "text-3xl md:text-5xl"
+              ? "text-6xl md:text-8xl lg:text-9xl"
+              : "text-5xl md:text-7xl"
           }`}
         >
           {title}
         </h1>
         {subtitle && (
-          <p className="animate-fade-in-up-delay-1 mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-secondary-foreground/80 md:text-xl">
+          <p className="animate-fade-in-up-delay-1 mx-auto mt-10 max-w-2xl text-lg leading-relaxed text-white/70 md:text-xl font-light tracking-wide">
             {subtitle}
           </p>
         )}
         {children && (
-          <div className="animate-fade-in-up-delay-2 mt-10">{children}</div>
+          <div className="animate-fade-in-up-delay-2 mt-16 w-full">{children}</div>
         )}
       </div>
     </section>
