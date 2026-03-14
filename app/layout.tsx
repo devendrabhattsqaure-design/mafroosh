@@ -4,8 +4,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { CartProvider } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
+
+// No CartProvider needed with Zustand!
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -35,12 +36,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased">
-        <CartProvider>
-          <CartDrawer />
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </CartProvider>
+        {/* No CartProvider wrapper needed */}
+        <CartDrawer />
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
         <Analytics />
       </body>
     </html>

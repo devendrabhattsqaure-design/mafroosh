@@ -1,13 +1,46 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Shield, Truck, Star, Heart, Sparkles, HandHeart } from "lucide-react"
+import { Shield, Truck, Star, Sparkles, HandHeart, ChevronRight, Package, ArrowRight } from "lucide-react"
 import HeroSection from "@/components/HeroSection"
 import ProductCard from "@/components/ProductCard"
 import AnimatedSection from "@/components/AnimatedSection"
 import InteractiveFurnitureShowcase from "@/components/InteractiveFurnitureShowcase"
-import { products } from "@/lib/products"
 
-const featuredProducts = products.slice(0, 4)
+
+// API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+
+// Types
+interface Product {
+  product_id: string
+  product_name: string
+  description: string
+  short_description: string
+  price: number
+  category_id: number
+  category_name: string
+  images: Array<{ image_url: string; is_primary: boolean }>
+  is_featured: boolean
+  is_bestseller: boolean
+  is_new_arrival: boolean
+  is_on_sale: boolean
+  stock_quantity: number
+  rating?: number
+  slug: string
+  material?: string
+  dimensions?: string
+}
+
+interface Category {
+  category_id: number
+  category_name: string
+  slug: string
+  description: string
+  image_url: string
+}
 
 const features = [
   {
@@ -36,28 +69,96 @@ const features = [
   },
 ]
 
-const testimonials = [
-  {
-    name: "Priya Sharma",
-    location: "Mumbai",
-    text: "The sofa from Mafroosh transformed my living room! The quality is exceptional and the design is absolutely stunning. Highly recommended!",
-    rating: 5,
-  },
-  {
-    name: "Rahul Verma",
-    location: "Delhi",
-    text: "Excellent furniture pieces with outstanding craftsmanship. The dining chairs are super comfortable and look elegant. Great value for money.",
-    rating: 5,
-  },
-  {
-    name: "Anjali Desai",
-    location: "Bangalore",
-    text: "Mafroosh has everything I needed to decorate my home. The area rug and pillows complement each other perfectly. Amazing experience!",
-    rating: 5,
-  },
-]
+// Function to fetch with org_id header
+const fetchWithOrg = async (endpoint: string) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    headers: {
+      'x-org-id': '1',
+      'Content-Type': 'application/json',
+    },
+  })
+  if (!response.ok) {
+    throw new Error(`API call failed: ${response.statusText}`)
+  }
+  return response.json()
+}
 
 export default function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        
+        // Fetch featured products
+        const productsData = await fetchWithOrg('/products?featured=true')
+        setFeaturedProducts(productsData.data || [])
+        
+        // Fetch categories with images
+        const categoriesData = await fetchWithOrg('/categories')
+        setCategories(categoriesData.data || [])
+        
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Failed to load products. Please try again later.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Transform API product to match ProductCard props
+  const transformProduct = (product: Product) => ({
+    id: product.product_id,
+    name: product.product_name,
+    description: product.short_description || product.description,
+    price: product.price,
+    image: product.images?.find(img => img.is_primary)?.image_url || product.images?.[0]?.image_url || '/images/placeholder.jpg',
+    category: product.category_name?.toLowerCase().replace(' ', '-') || 'uncategorized',
+    material: product.material,
+    dimensions: product.dimensions,
+    inStock: product.stock_quantity > 0,
+    isNew: product.is_new_arrival,
+    isBestseller: product.is_bestseller,
+    discount: product.is_on_sale ? 10 : undefined, // You can calculate actual discount from compare_price
+    rating: product.rating || 4.5,
+  })
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+          <p className="mt-4 text-muted-foreground">Loading beautiful furniture for you...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md px-4">
+          <Package className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-foreground mb-2">Oops! Something went wrong</h2>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       {/* Hero Section */}
@@ -71,7 +172,7 @@ export default function HomePage() {
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/products"
-            className="rounded-xl   border-2 border-[var(--color-gold)] bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
+            className="rounded-xl border-2 border-[var(--color-gold)] bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
           >
             Explore Products
           </Link>
@@ -82,21 +183,83 @@ export default function HomePage() {
             Visit Our Store
           </Link>
         </div>
-
-        {/* Floating diyas */}
-        {/* <div className="pointer-events-none absolute bottom-8 left-8 text-4xl opacity-30 animate-float-diya" aria-hidden="true">
-          <DivaIcon />
-        </div>
-        <div className="pointer-events-none absolute right-12 top-16 text-3xl opacity-20 animate-float-diya-slow" aria-hidden="true">
-          <DivaIcon />
-        </div>
-        <div className="pointer-events-none absolute bottom-20 right-1/3 text-2xl opacity-25 animate-float-diya" aria-hidden="true">
-          <DivaIcon />
-        </div> */}
       </HeroSection>
 
       {/* Interactive Furniture Showcase */}
       <InteractiveFurnitureShowcase />
+
+      {/* Categories Section with Images */}
+      {categories.length > 0 && (
+        <section className="bg-background py-20 md:py-28">
+          <div className="mx-auto max-w-7xl px-6">
+            <AnimatedSection className="text-center mb-12">
+              <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+                Shop by Category
+              </span>
+              <h2 className="mt-3 font-serif text-3xl font-bold text-foreground md:text-4xl text-balance">
+                Explore Our Collections
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
+                Browse through our carefully curated categories to find the perfect pieces for your home
+              </p>
+            </AnimatedSection>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {categories.slice(0, 4).map((category, index) => (
+                <AnimatedSection key={category.category_id} delay={index * 100}>
+                  <Link
+                    href={`/products?category=${category.slug}`}
+                    className="group relative block overflow-hidden rounded-2xl bg-card shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  >
+                    {/* Category Image */}
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      <Image
+                        src={category.image_url || '/images/category-placeholder.jpg'}
+                        alt={category.category_name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      />
+                      
+                      {/* Overlay gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      
+                      {/* Category name and description */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h3 className="font-serif text-xl font-bold mb-2">
+                          {category.category_name}
+                        </h3>
+                        {category.description && (
+                          <p className="text-sm text-white/80 line-clamp-2 mb-3">
+                            {category.description}
+                          </p>
+                        )}
+                        
+                        {/* Shop now indicator */}
+                        <div className="flex items-center gap-2 text-sm font-medium text-white/90 group-hover:text-white transition-colors">
+                          <span>Shop Now</span>
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </AnimatedSection>
+              ))}
+            </div>
+
+            {/* View All Categories Button */}
+            <AnimatedSection className="mt-12 text-center">
+              <Link
+                href="/categories"
+                className="inline-flex items-center gap-2 rounded-xl bg-secondary px-8 py-3.5 font-semibold text-secondary-foreground transition-all hover:bg-secondary/90 hover:shadow-md group"
+              >
+                View All Categories
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </AnimatedSection>
+          </div>
+        </section>
+      )}
 
       {/* Featured Products */}
       <section className="bg-background py-20 md:py-28">
@@ -113,20 +276,28 @@ export default function HomePage() {
             </p>
           </AnimatedSection>
 
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product, i) => (
-              <AnimatedSection key={product.id} delay={i * 100}>
-                <ProductCard product={product} />
-              </AnimatedSection>
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredProducts.slice(0, 4).map((product, i) => (
+                <AnimatedSection key={product.product_id} delay={i * 100}>
+                  <ProductCard product={transformProduct(product)} index={i} />
+                </AnimatedSection>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-14 text-center py-12 bg-muted/30 rounded-2xl">
+              <Package className="h-16 w-16 text-primary/40 mx-auto mb-4" />
+              <p className="text-muted-foreground">No featured products available at the moment.</p>
+            </div>
+          )}
 
           <AnimatedSection className="mt-12 text-center">
             <Link
               href="/products"
-              className="inline-block rounded-xl bg-secondary px-8 py-3.5 font-semibold text-secondary-foreground transition-all hover:bg-secondary/90 hover:shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-secondary px-8 py-3.5 font-semibold text-secondary-foreground transition-all hover:bg-secondary/90 hover:shadow-md group"
             >
               View All Products
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </AnimatedSection>
         </div>
@@ -179,7 +350,7 @@ export default function HomePage() {
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {testimonials.map((testimonial, i) => (
               <AnimatedSection key={testimonial.name} delay={i * 100}>
-                <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
+                <div className="rounded-xl border border-border bg-card p-8 shadow-sm hover:shadow-md transition-all">
                   <div className="flex gap-1">
                     {Array.from({ length: testimonial.rating }).map((_, j) => (
                       <Star
@@ -212,8 +383,14 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-secondary py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6">
+      <section className="bg-secondary py-20 md:py-28 relative overflow-hidden">
+        {/* Decorative pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl" />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 relative z-10">
           <AnimatedSection className="text-center">
             <h2 className="font-serif text-3xl font-bold text-[var(--color-gold)] md:text-4xl text-balance">
               Start Creating Your Dream Home Today
@@ -224,16 +401,32 @@ export default function HomePage() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/products"
-                className="rounded-xl bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md"
+                className="rounded-xl bg-primary px-8 py-3.5 font-semibold text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md hover:scale-105"
               >
                 Shop Now
               </Link>
               <Link
                 href="/contact"
-                className="rounded-xl border-2 border-[var(--color-gold)] px-8 py-3.5 font-semibold text-[var(--color-gold)] transition-all hover:bg-[var(--color-gold)]/10"
+                className="rounded-xl border-2 border-[var(--color-gold)] px-8 py-3.5 font-semibold text-[var(--color-gold)] transition-all hover:bg-[var(--color-gold)]/10 hover:scale-105"
               >
                 Contact Us
               </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-secondary-foreground/60">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                <span>Secure Payments</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Truck className="h-4 w-4" />
+                <span>Free Shipping*</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                <span>2-Year Warranty</span>
+              </div>
             </div>
           </AnimatedSection>
         </div>
@@ -242,28 +435,23 @@ export default function HomePage() {
   )
 }
 
-/* Decorative diya SVG icon */
-function DivaIcon() {
-  return (
-    <svg
-      width="40"
-      height="40"
-      viewBox="0 0 40 40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <ellipse cx="20" cy="30" rx="14" ry="6" fill="#D2B48C" />
-      <ellipse cx="20" cy="28" rx="10" ry="4" fill="#F8843F" opacity="0.5" />
-      <path
-        d="M20 8C20 8 16 16 16 20C16 22.2 17.8 24 20 24C22.2 24 24 22.2 24 20C24 16 20 8 20 8Z"
-        fill="#F8843F"
-      />
-      <path
-        d="M20 12C20 12 18 16 18 18C18 19.1 18.9 20 20 20C21.1 20 22 19.1 22 18C22 16 20 12 20 12Z"
-        fill="#FFD700"
-        opacity="0.7"
-      />
-    </svg>
-  )
-}
+const testimonials = [
+  {
+    name: "Priya Sharma",
+    location: "Mumbai",
+    text: "The sofa from Mafroosh transformed my living room! The quality is exceptional and the design is absolutely stunning. Highly recommended!",
+    rating: 5,
+  },
+  {
+    name: "Rahul Verma",
+    location: "Delhi",
+    text: "Excellent furniture pieces with outstanding craftsmanship. The dining chairs are super comfortable and look elegant. Great value for money.",
+    rating: 5,
+  },
+  {
+    name: "Anjali Desai",
+    location: "Bangalore",
+    text: "Mafroosh has everything I needed to decorate my home. The area rug and pillows complement each other perfectly. Amazing experience!",
+    rating: 5,
+  },
+]

@@ -3,9 +3,10 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { X, ShoppingCart } from "lucide-react"
-import { useCart } from "@/context/CartContext"
+import { X, ShoppingCart ,PlusIcon} from "lucide-react"
+import { useCartStore } from "@/store/cartStore"
 import AnimatedSection from "@/components/AnimatedSection"
+
 
 interface Hotspot {
   id: string
@@ -46,13 +47,13 @@ const hotspots: Hotspot[] = [
     name: "Comfort Dining Chair Set",
     label: "Chairs",
     x: 70,
-    y: 70,
+    y: 50,
     productId: "4",
   },
 ]
 
 export default function InteractiveFurnitureShowcase() {
-  const { addItem } = useCart()
+  const { addItem } = useCartStore()
   const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null)
   const [selectedHotspot, setSelectedHotspot] = useState<string | null>(null)
   const [addedToCart, setAddedToCart] = useState<string | null>(null)
@@ -64,10 +65,49 @@ export default function InteractiveFurnitureShowcase() {
       price,
       image,
       category,
-      quantity: 1,
     })
     setAddedToCart(productId)
     setTimeout(() => setAddedToCart(null), 2000)
+  }
+
+  // Product data mapping
+  const productData = {
+    "1": {
+      name: "Luxe Velvet Sofa",
+      price: 45999,
+      image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+      category: "sofa"
+    },
+    "2": {
+      name: "Modern Coffee Table",
+      price: 12999,
+      image: "https://img-us.aosomcdn.com/thumbnail/100/n0/product/2024/09/27/mqMc83192326e2257.jpg",
+      category: "table"
+    },
+    "3": {
+      name: "Ornate Wall Mirror",
+      price: 8999,
+      image: "https://images.unsplash.com/photo-1618220179428-22790b461013",
+      category: "mirror"
+    },
+    "4": {
+      name: "Comfort Dining Chair Set",
+      price: 24999,
+      image: "https://media.landmarkshops.in/cdn-cgi/image/h=750,w=750,q=85,fit=cover/homecentre/1000014310415-1000014310414_02-2100.jpg",
+      category: "chairs"
+    },
+  }
+
+  const handleHotspotClick = (hotspot: Hotspot, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const product = productData[hotspot.productId as keyof typeof productData]
+    handleAddToCart(
+      hotspot.productId,
+      product.name,
+      product.price,
+      product.image,
+      product.category
+    )
   }
 
   return (
@@ -98,46 +138,80 @@ export default function InteractiveFurnitureShowcase() {
             />
 
             {/* Interactive hotspots */}
-            {hotspots.map((hotspot) => (
-              <button
-                key={hotspot.id}
-                onClick={() => setSelectedHotspot(hotspot.id)}
-                onMouseEnter={() => setHoveredHotspot(hotspot.id)}
-                onMouseLeave={() => setHoveredHotspot(null)}
-                className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
-                  hoveredHotspot === hotspot.id ? "scale-125" : "scale-100"
-                }`}
-                style={{
-                  left: `${hotspot.x}%`,
-                  top: `${hotspot.y}%`,
-                }}
-                aria-label={`Click to view ${hotspot.name}`}
-              >
-                {/* Pulsing circle indicator */}
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-primary/40 animate-pulse" style={{width: 60, height: 60, marginLeft: -30, marginTop: -30}} />
-                  <div className="relative w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="w-3 h-3 rounded-full bg-primary-foreground" />
-                  </div>
-                </div>
-
-                {/* Tooltip */}
-                {hoveredHotspot === hotspot.id && (
-                  <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                    <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-semibold">
-                      {hotspot.label}
+            {hotspots.map((hotspot) => {
+              const product = productData[hotspot.productId as keyof typeof productData]
+              const isAdded = addedToCart === hotspot.productId
+              
+              return (
+                <div
+                  key={hotspot.id}
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                    hoveredHotspot === hotspot.id ? "scale-110" : "scale-100"
+                  }`}
+                  style={{
+                    left: `${hotspot.x}%`,
+                    top: `${hotspot.y}%`,
+                  }}
+                  onMouseEnter={() => setHoveredHotspot(hotspot.id)}
+                  onMouseLeave={() => setHoveredHotspot(null)}
+                >
+                  {/* Main hotspot button with cart icon */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedHotspot(hotspot.id)
+                    }}
+                    className="relative group"
+                    aria-label={`Click to view ${hotspot.name}`}
+                  >
+                    {/* Pulsing background */}
+                    {/* <div className="absolute inset-0 rounded-full bg-primary/30 animate-pulse" style={{width: 56, height: 56, marginLeft: -28, marginTop: -28}} /> */}
+                    
+                    {/* Hotspot circle with cart icon */}
+                    <div className="relative w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg hover:shadow-xl transition-all cursor-pointer group-hover:bg-primary/90">
+                      <ShoppingCart className="w-6 h-6 text-primary-foreground" />
+                      
+                      {/* Quick add indicator */}
+                      {/* <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
+                        <span className="text-[10px] font-bold text-secondary-foreground"> <PlusIcon /> </span>
+                      </div> */}
                     </div>
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-primary" />
-                  </div>
-                )}
-              </button>
-            ))}
+
+                    {/* Quick add button (appears on hover) */}
+                    {hoveredHotspot === hotspot.id && (
+                      <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1">
+                        {/* <button
+                          onClick={(e) => handleHotspotClick(hotspot, e)}
+                          className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-lg flex items-center gap-1 ${
+                            isAdded
+                              ? "bg-green-500 text-white"
+                              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          <ShoppingCart className="w-3 h-3" />
+                          {isAdded ? "Added!" : "Quick Add"}
+                        </button> */}
+                        <div className="bg-primary text-primary-foreground px-3 py-1 rounded-lg text-sm font-semibold">
+                          {hotspot.label}
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )
+            })}
           </div>
 
           {/* Product detail popup */}
           {selectedHotspot && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-              <div className="relative bg-card rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in scale-95 duration-300">
+            <div 
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+              onClick={() => setSelectedHotspot(null)}
+            >
+              <div 
+                className="relative bg-card rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in scale-95 duration-300"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   onClick={() => setSelectedHotspot(null)}
                   className="absolute right-4 top-4 z-10 p-2 hover:bg-muted rounded-lg transition-colors"
@@ -150,28 +224,7 @@ export default function InteractiveFurnitureShowcase() {
                   const hotspot = hotspots.find((h) => h.id === selectedHotspot)
                   if (!hotspot) return null
 
-                  const product = {
-                    1: {
-                      name: "Luxe Velvet Sofa",
-                      price: 45999,
-                      image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
-                    },
-                    2: {
-                      name: "Modern Coffee Table",
-                      price: 12999,
-                      image: "https://img-us.aosomcdn.com/thumbnail/100/n0/product/2024/09/27/mqMc83192326e2257.jpg",
-                    },
-                    3: {
-                      name: "Ornate Wall Mirror",
-                      price: 8999,
-                      image: "https://images.unsplash.com/photo-1618220179428-22790b461013",
-                    },
-                    4: {
-                      name: "Comfort Dining Chair Set",
-                      price: 24999,
-                      image: "https://media.landmarkshops.in/cdn-cgi/image/h=750,w=750,q=85,fit=cover/homecentre/1000014310415-1000014310414_02-2100.jpg",
-                    },
-                  }[hotspot.productId as keyof typeof product]
+                  const product = productData[hotspot.productId as keyof typeof productData]
 
                   return (
                     <>
@@ -196,7 +249,7 @@ export default function InteractiveFurnitureShowcase() {
                             onClick={() => setSelectedHotspot(null)}
                             className="flex-1 inline-block rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground text-center transition-all hover:bg-primary/90"
                           >
-                            View Details
+                            View 
                           </Link>
                           <button 
                             type="button"
@@ -206,13 +259,13 @@ export default function InteractiveFurnitureShowcase() {
                                 product?.name || "",
                                 product?.price || 0,
                                 product?.image || "",
-                                hotspot.id
+                                product?.category || hotspot.id
                               )
                               setSelectedHotspot(null)
                             }}
                             className={`flex-1 rounded-lg px-4 py-2 font-semibold transition-all flex items-center justify-center gap-2 ${
                               addedToCart === hotspot.productId
-                                ? "bg-primary text-primary-foreground"
+                                ? "bg-green-500 text-white"
                                 : "border-2 border-primary text-primary hover:bg-primary/10"
                             }`}
                           >

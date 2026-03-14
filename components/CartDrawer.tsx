@@ -4,23 +4,21 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { X, Minus, Plus, ShoppingBag } from "lucide-react"
-import { useCart } from "@/context/CartContext"
+import { useCartItems, useCartCount, useCartSubtotal, useCartOpen, useCartActions } from "@/store/cartStore"
 import Lottie from "lottie-react"
 import sparkle from "./sparkle.json"
+import { useRouter } from "next/navigation"
 
 export default function CartDrawer() {
-  const {
-    items,
-    removeItem,
-    updateQuantity,
-    subtotal,
-    isCartOpen,
-    closeCart,
-    clearCart,
-  } = useCart()
+  const items = useCartItems()
+  const itemCount = useCartCount()
+  const subtotal = useCartSubtotal()
+  const isCartOpen = useCartOpen()
+  const { removeItem, updateQuantity, closeCart } = useCartActions()
+  
   const [showSparkler, setShowSparkler] = useState(false)
   const [isCompletingOrder, setIsCompletingOrder] = useState(false)
-
+const router = useRouter()
   // Close drawer on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -52,15 +50,16 @@ export default function CartDrawer() {
       setIsCompletingOrder(false)
       
       // Navigate to checkout page
-      window.location.href = "/checkout"
-    }, 3000)
+      router.push("/checkout")
+    }, 2000)
   }
 
+  // Don't render anything if drawer is closed
   if (!isCartOpen) return null
 
   return (
     <>
-      {/* Lottie Sparkler Animation - Positioned on the right */}
+      {/* Lottie Sparkler Animation */}
       {showSparkler && (
         <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden">
           <div className="absolute right-8 top-1/2 -translate-y-1/2 w-64 h-64">
@@ -92,7 +91,7 @@ export default function CartDrawer() {
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-primary" />
             <h2 className="font-serif text-xl font-bold text-foreground">
-              Your Cart ({items.length})
+              Your Cart ({itemCount})
             </h2>
           </div>
           <button

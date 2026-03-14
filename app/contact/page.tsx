@@ -19,7 +19,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Phone",
-   lines: ["+91 9621374263", "+91 9621374263"],
+   lines: ["+91 9621374263", "+91 962137463"],
   },
   {
     icon: Mail,
