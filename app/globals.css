@@ -10,9 +10,9 @@
   --card-foreground: #2B1B1B;
   --popover: #FFFBF9;
   --popover-foreground: #2B1B1B;
-  --primary: #8B3A3A;
+  --primary: #41431B;
   --primary-foreground: #FFFFFF;
-  --secondary: #6B2C2C;
+  --secondary: #FF4400;
   --secondary-foreground: #FFFFFF;
   --muted: #F5EEEA;
   --muted-foreground: #6B5555;
@@ -25,12 +25,12 @@
   --ring: #8B3A3A;
   --radius: 0.75rem;
 
-  --color-burgundy: #8B3A3A;
+  --color-burgundy: #85C79A;
   --color-deep-burgundy: #6B2C2C;
   --color-cream: #FAF8F6;
   --color-warm-white: #FFFBF9;
   --color-dark-brown: #2B1B1B;
-  --color-gold: #C9A961;
+  --color-gold: #41431B;
 }
 
 @theme inline {
